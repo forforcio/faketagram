@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import com.example.faketagram.data_management.`interface`.DataManagementInterface
 import com.example.faketagram.data_management.model.User
 import com.example.faketagram.data_management.service.DataManagementService
+import com.example.faketagram.data_management.service.ResourcesService
 import com.example.faketagram.ui.theme.FaketagramTheme
 
 class MainActivity : ComponentActivity() {
@@ -65,8 +66,10 @@ fun FaketagramApp() {
     var currentDestination by rememberSaveable { mutableStateOf(AppDestinations.HOME) }
 
     val dataService: DataManagementInterface = DataManagementService()
-    dataService.initialize(LocalContext.current)
-    dataService.getUsersFromJson(R.raw.users)
+    val resourcesService = ResourcesService(LocalContext.current)
+    context(resourcesService) {
+        dataService.getUsersFromJson(R.raw.users)
+    }
 
     context(dataService) {
         NavigationSuiteScaffold(

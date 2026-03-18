@@ -7,20 +7,14 @@ import kotlinx.serialization.json.Json
 
 class DataManagementService: DataManagementInterface {
 
-    lateinit var context: Context
     lateinit var users: List<User>
 
-    override fun initialize(context: Context) {
-        this.context = context
-    }
-
+    context(resources: ResourcesService)
     override fun getUsersFromJson(resId: Int) {
-        val jsonString = context.resources.openRawResource(resId)
-            .bufferedReader(Charsets.UTF_8)
-            .use { it.readText() }
+        val jsonString = resources.getJsonTextById(resId)
 
         users = Json.decodeFromString<List<User>>(jsonString).map { user ->
-            user.resId = getResourceIdByImageName(user.resName)
+            user.resId = resources.getResourceIdByImageName(user.resName)
             user.copy()
         }
     }
@@ -29,12 +23,6 @@ class DataManagementService: DataManagementInterface {
         return users
     }
 
-    fun getResourceIdByImageName(photoResName: String): Int {
-        return context.resources.getIdentifier(
-            photoResName,
-            "drawable",
-            context.packageName
-        )
-    }
+
 
 }
