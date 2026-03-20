@@ -1,8 +1,7 @@
-package com.example.faketagram.data_management.service
+package com.example.faketagram.data.service
 
-import android.content.Context
-import com.example.faketagram.data_management.`interface`.DataManagementInterface
-import com.example.faketagram.data_management.model.User
+import com.example.faketagram.data.`interface`.DataManagementInterface
+import com.example.faketagram.data.model.User
 import kotlinx.serialization.json.Json
 
 class DataManagementService: DataManagementInterface {
