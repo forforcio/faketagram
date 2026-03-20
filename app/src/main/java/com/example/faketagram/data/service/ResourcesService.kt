@@ -1,4 +1,4 @@
-package com.example.faketagram.data_management.service
+package com.example.faketagram.data.service
 
 import android.content.Context
 

@@ -1,16 +1,17 @@
-package com.example.faketagram.data_management.model
+package com.example.faketagram.data.model
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
 @Serializable
 data class User (
+    val userId: Int,
     val username: String,
     val age: Int,
     val bio: String,
     val resName: String,
     @Transient
-    var resId: Int = 0
+    var resId: Int = 0,
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
