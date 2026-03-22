@@ -74,10 +74,13 @@ dependencies {
     implementation(libs.firebase.auth)
 
     // Firebase UI
-    //noinspection UseTomlInstead
     implementation("com.firebaseui:firebase-ui-auth:9.1.1")
     implementation(libs.firebase.ui.database)
     implementation(libs.androidx.appcompat)
+
+    implementation(platform(libs.androidx.compose.bom.vtuversionbom))
+    implementation(libs.androidx.compose.material.icons.extended)
+
     testImplementation(libs.junit)
     testImplementation(libs.mockito.core)
     androidTestImplementation(libs.androidx.junit)
