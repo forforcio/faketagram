@@ -43,7 +43,7 @@ import com.example.faketagram.data.model.User
 @Composable
 fun StartChatScreen(
     uiState: UsersUiState,
-    onUserClick: (Int) -> Unit,
+    onUserClick: (User) -> Unit,
     modifier: Modifier
 ) {
     val users: List<User> = uiState.users
@@ -81,7 +81,7 @@ fun StartChatScreen(
                 ChatView(
                     user,
                     onClick = {
-                        onUserClick(user.userId)
+                        onUserClick(user)
                     }
                 )
             }

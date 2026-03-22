@@ -1,6 +1,5 @@
 package com.example.faketagram.ui
 
-import android.widget.Button
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -31,16 +30,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.faketagram.data.UsersUiState
 import com.example.faketagram.data.model.User
-import com.example.faketagram.ui.model.UsersViewModel
-
 
 @Composable
-fun StartFeedScreen(
-    uiState: UsersUiState,
-    onUserPhotoClicked: (User) -> Unit,
+fun StartProfileScreen(
+    onLogoutButtonClicked: () -> Unit,
     modifier: Modifier
 ) {
-    val users: List<User> = uiState.users
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
@@ -63,67 +58,11 @@ fun StartFeedScreen(
             }
         }
     ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(top = 0.dp),
-            verticalArrangement = Arrangement.spacedBy(0.dp),
-            contentPadding = PaddingValues(0.dp)
+        Button(
+            onClick = { onLogoutButtonClicked() },
+            modifier = Modifier.padding(innerPadding)
         ) {
-            items(users) { user ->
-                SocialPostCard(
-                    user,
-                    onClick = { onUserPhotoClicked(user) }
-                )
-            }
+            Text(text = "Logout")
         }
-    }
-}
-
-
-@Composable
-fun SocialPostCard(
-    user: User,
-    onClick: () -> Unit,
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(0.dp)
-    ) {
-        Image(
-            painter = painterResource(user.resId),
-            contentDescription = "User photo",
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(1f)
-                .clickable(
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
-                ) { onClick() },
-            contentScale = ContentScale.Crop
-        )
-        Column(modifier = Modifier.padding(18.dp)) {
-            Text(
-                text = user.username,
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.ExtraBold,
-                    color = Color.White
-                )
-            )
-            Text(
-                text = user.age.toString(),
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    color = Color.White
-                )
-            )
-        }
-    }
-    Column(modifier = Modifier.padding(15.dp)) {
-        Text(
-            text = user.bio,
-            style = MaterialTheme.typography.bodyMedium
-        )
     }
 }

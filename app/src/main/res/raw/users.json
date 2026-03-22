@@ -5,7 +5,7 @@
     "age": 43,
     "bio": "Me llamo paco pero me gusta que me llamen paco mer jeje",
     "resName": "wenaso_1",
-    "firebaseUid": "[insertUid]"
+    "firebaseUid": "mXe9SWBQRC3yFWJz5av7wZB0AxG7"
   },
   {
     "userId": 2,
@@ -13,7 +13,7 @@
     "age": 43,
     "bio": "Manòlo sai bela (en italiano)",
     "resName": "wenaso_3",
-    "firebaseUid": "[insertUid]"
+    "firebaseUid": "GgFBcGfe3rRPbZYiP7ixwCsTyfYF"
   },
   {
     "userId": 3,
@@ -21,7 +21,7 @@
     "age": 18,
     "bio": "ola soi benisio gramabe una peligula guapa",
     "resName": "wenaso_2",
-    "firebaseUid": "[insertUid]"
+    "firebaseUid": "zjeFQjXwa3zS5p4DCogqBHd3NfwV"
   },
   {
     "userId": 4,
@@ -29,6 +29,6 @@
     "age": 18,
     "bio": "ola soi la vanesia",
     "resName": "wenasa",
-    "firebaseUid": "[insertUid]"
+    "firebaseUid": "sNbBJpMd9t3jMURz80ccKKgu4qDe"
   }
 ]
