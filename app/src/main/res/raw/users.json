@@ -4,20 +4,31 @@
     "username": "Fransisco Jones",
     "age": 43,
     "bio": "Me llamo paco pero me gusta que me llamen paco mer jeje",
-    "resName": "wenaso_1"
+    "resName": "wenaso_1",
+    "firebaseUid": "[insertUid]"
   },
   {
     "userId": 2,
     "username": "Manolo",
     "age": 43,
     "bio": "Manòlo sai bela (en italiano)",
-    "resName": "wenaso_3"
+    "resName": "wenaso_3",
+    "firebaseUid": "[insertUid]"
   },
   {
     "userId": 3,
     "username": "Venisio del todo",
     "age": 18,
     "bio": "ola soi benisio gramabe una peligula guapa",
-    "resName": "wenaso_2"
+    "resName": "wenaso_2",
+    "firebaseUid": "[insertUid]"
+  },
+  {
+    "userId": 4,
+    "username": "Vanesa",
+    "age": 18,
+    "bio": "ola soi la vanesia",
+    "resName": "wenasa",
+    "firebaseUid": "[insertUid]"
   }
 ]
