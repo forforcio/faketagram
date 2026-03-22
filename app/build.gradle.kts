@@ -2,6 +2,11 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     kotlin("plugin.serialization") version "2.3.20"
+//    id("com.android.application") version "9.0.0" apply false
+//    id("com.android.library") version "9.0.1" apply false
+//    id("org.jetbrains.kotlin.android") version "2.3.0" apply false
+    id("com.google.gms.google-services") version "4.4.4"
+//    id("com.github.ben-manes.versions") version "0.53.0" apply true
 }
 
 kotlin {
@@ -43,6 +48,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -58,6 +64,23 @@ dependencies {
     implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.navigation.compose)
+    // Google
+    implementation(libs.play.services.auth)
+
+    // Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.database)
+    implementation(libs.firebase.storage)
+    implementation(libs.firebase.auth)
+
+    // Firebase UI
+    implementation("com.firebaseui:firebase-ui-auth:9.1.1")
+    implementation(libs.firebase.ui.database)
+    implementation(libs.androidx.appcompat)
+
+    implementation(platform(libs.androidx.compose.bom.vtuversionbom))
+    implementation(libs.androidx.compose.material.icons.extended)
+
     testImplementation(libs.junit)
     testImplementation(libs.mockito.core)
     androidTestImplementation(libs.androidx.junit)
@@ -66,5 +89,5 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
-
 }
+
