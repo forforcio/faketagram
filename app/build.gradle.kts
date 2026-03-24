@@ -77,6 +77,7 @@ dependencies {
     implementation("com.firebaseui:firebase-ui-auth:9.1.1")
     implementation(libs.firebase.ui.database)
     implementation(libs.androidx.appcompat)
+    implementation("io.coil-kt:coil-compose:2.7.0")
 
     implementation(platform(libs.androidx.compose.bom.vtuversionbom))
     implementation(libs.androidx.compose.material.icons.extended)

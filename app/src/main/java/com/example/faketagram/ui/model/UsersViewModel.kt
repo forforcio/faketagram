@@ -1,5 +1,6 @@
 package com.example.faketagram.ui.model
 
+import android.net.Uri
 import android.util.Log
 import com.example.faketagram.BuildConfig
 import androidx.lifecycle.ViewModel
@@ -11,9 +12,12 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.database
+import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.storage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,7 +29,7 @@ class UsersViewModel: ViewModel() {
     private val db: FirebaseDatabase by lazy {
         Firebase.database.apply {
             if (BuildConfig.DEBUG) {
-                useEmulator("10.0.2.2", 9000)
+                useEmulator("127.0.0.1", 9000)
             }
         }
     }
@@ -128,4 +132,68 @@ class UsersViewModel: ViewModel() {
         Firebase.auth.signOut()
     }
 
+    fun onImageSelected(receiverUid: String, uri: Uri) {
+        val user = Firebase.auth.currentUser
+        val photoURL = user?.photoUrl?.toString()
+        val tempMessage = Message(
+            photoUrl = photoURL,
+            receiverUid = receiverUid,
+            senderUid = user?.uid,
+            imageUrl = LOADING_IMAGE_URL,
+            timestamp = System.currentTimeMillis())
+        db.reference
+            .child(MESSAGES_CHILD)
+            .push()
+            .setValue(
+                tempMessage,
+                DatabaseReference.CompletionListener { databaseError, databaseReference ->
+                    if (databaseError != null) {
+                        Log.w(
+                            TAG, "Unable to write message to database.",
+                            databaseError.toException()
+                        )
+                        return@CompletionListener
+                    }
+
+                    // Build a StorageReference and then upload the file
+                    val key = databaseReference.key
+                    val storageReference = Firebase.storage
+                        .getReference(user!!.uid)
+                        .child(key!!)
+                        .child(uri.lastPathSegment!!)
+                    putImageInStorage(tempMessage, storageReference, uri, key)
+                })
+    }
+
+    private fun putImageInStorage(message: Message, storageReference: StorageReference, uri: Uri, key: String?) {
+        // First upload the image to Cloud Storage
+        storageReference.putFile(uri)
+            .addOnSuccessListener { taskSnapshot -> // After the image loads, get a public downloadUrl for the image
+                // and add it to the message.
+                taskSnapshot.metadata!!.reference!!.downloadUrl
+                    .addOnSuccessListener { uri ->
+                        val friendlyMessage =
+                            message.copy(imageUrl = uri.toString())
+                        db.reference
+                            .child(MESSAGES_CHILD)
+                            .child(key!!)
+                            .setValue(friendlyMessage)
+                    }
+            }
+            .addOnFailureListener { e ->
+                Log.w(
+                    TAG,
+                    "Image upload task was unsuccessful.",
+                    e
+                )
+            }
+    }
+
+    companion object {
+        private const val TAG = "MainActivity"
+        const val MESSAGES_CHILD = "messages"
+        const val ANONYMOUS = "anonymous"
+        private const val LOADING_IMAGE_URL = "https://www.google.com/images/spin-32.gif"
+    }
 }
+
