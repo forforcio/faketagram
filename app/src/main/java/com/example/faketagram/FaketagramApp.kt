@@ -102,6 +102,12 @@ fun FaketagramApp(
                             receiverUid = userChat.firebaseUid,
                             text = text,
                         )
+                    },
+                    onSendPhoto = { uri ->
+                        viewModel.onImageSelected(
+                            receiverUid = userChat.firebaseUid,
+                            uri = uri
+                        )
                     }
                 )
             }
