@@ -1,11 +1,16 @@
 package com.example.faketagram
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteDefaults
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -16,7 +21,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -38,6 +46,7 @@ import com.example.faketagram.ui.StartProfileScreen
 import com.example.faketagram.ui.StartUserChatScreen
 import com.example.faketagram.ui.model.UsersViewModel
 import com.example.faketagram.ui.nav.Screen
+import kotlin.collections.copy
 
 @PreviewScreenSizes
 @Composable
@@ -142,14 +151,20 @@ fun FaketagramApp(
                                     contentDescription = "User photo",
                                     modifier = Modifier
                                         .clip(CircleShape)
-                                        .requiredSize(35.dp),
+                                        .requiredSize(35.dp)
+                                        .border(
+                                            width = 2.dp,
+                                            color = MaterialTheme.colorScheme.secondary,
+                                            shape = CircleShape
+                                        ),
                                     contentScale = ContentScale.Crop
                                 )
                             }
                             else {
                                 Icon(
                                     it.icon,
-                                    contentDescription = it.label
+                                    contentDescription = it.label,
+                                    tint = MaterialTheme.colorScheme.secondary
                                 )
                             }
                         },
