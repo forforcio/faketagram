@@ -11,6 +11,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,7 +27,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.ArrowCircleRight
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material3.Card
@@ -35,6 +39,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,6 +51,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -89,84 +95,152 @@ fun StartUserChatScreen(
 
     Scaffold(
         modifier = modifier
-            .fillMaxSize(), topBar = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(80.dp)
-                    .background(
-                        MaterialTheme.colorScheme.primary
+            .fillMaxSize(),
+        topBar = {
+            Column {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(120.dp)
+                        .background(
+                            MaterialTheme.colorScheme.tertiary
+                        )
+                        .padding(10.dp),
+                ) {
+                    Row(
+                        modifier = Modifier.padding(top = 20.dp).fillMaxSize().padding(horizontal = 5.dp),
+                        verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBackIosNew,
+                            contentDescription = "back icon",
+                            tint = Color.White
+                        )
+                        Image(
+                            painter = painterResource(user.resId),
+                            contentDescription = "User photo",
+                            modifier = Modifier
+                                .padding(horizontal = 10.dp)
+                                .clip(CircleShape)
+                                .requiredSize(50.dp),
+                            contentScale = ContentScale.Crop
+                        )
+                        Column() {
+                            Text(
+                                text = user.username,
+                                modifier = Modifier,
+                                style = MaterialTheme.typography.headlineSmall,
+                                color = Color.White,
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Start
+                            )
+                            Text(
+                                text = "A 2.3 km de ti",
+                                modifier = Modifier,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color.White,
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Start
+                            )
+                        }
+                    }
+                }
+                Box(
+                    modifier = Modifier
+                        .padding(15.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .fillMaxWidth()
+                        .height(40.dp)
+                        .background(
+                            MaterialTheme.colorScheme.surface
+                        )
+                        .padding(horizontal = 10.dp)
+                ) {
+                    Text(
+                        text = "\uD83D\uDD0D\uFE0E Buscar",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.Gray,
+                        modifier = Modifier
+                            .align(Alignment.CenterStart),
                     )
-                    .padding(20.dp)
-            ) {
-                Text(
-                    text = user.username,
-                    modifier = Modifier.align(Alignment.BottomStart),
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = Color.White,
-                    fontWeight = FontWeight.SemiBold
-                )
+                }
             }
         },
         bottomBar = {
-            Row(
+            Box (
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
                     .navigationBarsPadding()
-                    .imePadding(),
-                verticalAlignment = Alignment.CenterVertically,
+                    .imePadding()
             ) {
-                TextField(
-                    value = textToSend,
-                    onValueChange = { textToSend = it },
+                Row(
                     modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 8.dp),
-                    placeholder = { Text("Escribe un mensaje...") },
-                    singleLine = true,
-                )
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Send icon",
-                    modifier = Modifier
-                        .padding(horizontal = 8.dp)
-                        .clickable(
-                            onClick = {
-                                val cleanedText = textToSend.trim()
-                                if (cleanedText.isNotEmpty()) {
-                                    onSendMessage(cleanedText)
-                                    textToSend = ""
+                        .padding(10.dp)
+                        .background(
+                            MaterialTheme.colorScheme.surface,
+                            shape = RoundedCornerShape(20.dp)
+                        )
+                        .clip(RoundedCornerShape(20.dp))
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    TextField(
+                        value = textToSend,
+                        onValueChange = { textToSend = it },
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                            .padding(start = 8.dp),
+                        placeholder = { Text("Escribe algo...") },
+                        singleLine = true,
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = MaterialTheme.colorScheme.surface,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                            disabledContainerColor = MaterialTheme.colorScheme.surface,
+                            errorContainerColor = MaterialTheme.colorScheme.surface,
+                        ),
+                    )
+                    Icon(
+                        imageVector = Icons.Default.ArrowCircleRight,
+                        tint = MaterialTheme.colorScheme.tertiary,
+                        contentDescription = "Send icon",
+                        modifier = Modifier
+                            .padding(horizontal = 8.dp)
+                            .clickable(
+                                onClick = {
+                                    val cleanedText = textToSend.trim()
+                                    if (cleanedText.isNotEmpty()) {
+                                        onSendMessage(cleanedText)
+                                        textToSend = ""
+                                    }
                                 }
-                            }
-                        )
-                )
-                Icon(
-                    imageVector = Icons.Default.CameraAlt,
-                    contentDescription = "Take photo icon",
-                    modifier = Modifier
-                        .padding(horizontal = 8.dp)
-                        .clickable(
-                            onClick = {
-                                val outputUri = createTempImageUri(context)
-                                cameraTempUri = outputUri
-                                takePhotoLauncher.launch(outputUri)
-                            }
-                        )
-                )
-                Icon(
-                    imageVector = Icons.Default.Image,
-                    contentDescription = "Gallery search icon",
-                    modifier = Modifier
-                        .padding(horizontal = 8.dp)
-                        .clickable(
-                            onClick = {
-                                pickPhotoLauncher.launch(
-                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                                )
-                            }
-                        )
-                )
+                            )
+                    )
+                    Icon(
+                        imageVector = Icons.Default.CameraAlt,
+                        tint = MaterialTheme.colorScheme.tertiary,
+                        contentDescription = "Take photo icon",
+                        modifier = Modifier
+                            .padding(horizontal = 8.dp)
+                            .clickable(
+                                onClick = {
+                                    val outputUri = createTempImageUri(context)
+                                    cameraTempUri = outputUri
+                                    takePhotoLauncher.launch(outputUri)
+                                }
+                            )
+                    )
+                    Icon(
+                        imageVector = Icons.Default.Image,
+                        tint = MaterialTheme.colorScheme.tertiary,
+                        contentDescription = "Gallery search icon",
+                        modifier = Modifier
+                            .padding(horizontal = 8.dp)
+                            .clickable(
+                                onClick = {
+                                    pickPhotoLauncher.launch(
+                                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                    )
+                                }
+                            )
+                    )
+                }
             }
         }
     ) { innerPadding ->
@@ -210,7 +284,7 @@ fun MessageDisplay(
         modifier = Modifier
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.Bottom
+        verticalAlignment = Alignment.Top
     ) {
         if (isReceived) {
             Image(
@@ -227,7 +301,9 @@ fun MessageDisplay(
             ) {
                 MessageBubble(
                     message = message,
-                    modifier = Modifier
+                    modifier = Modifier,
+                    color = MaterialTheme.colorScheme.tertiary,
+                    fontColor = Color.White
                 )
             }
         } else {
@@ -237,7 +313,9 @@ fun MessageDisplay(
             ) {
                 MessageBubble(
                     message = message,
-                    modifier = Modifier
+                    modifier = Modifier,
+                    color = MaterialTheme.colorScheme.surface,
+                    fontColor = Color.Black
                 )
             }
             Image(
@@ -255,7 +333,9 @@ fun MessageDisplay(
 @Composable
 private fun MessageBubble(
     message: Message,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    color: Color,
+    fontColor: Color
 ) {
     BoxWithConstraints(
         modifier = modifier.padding(vertical = 4.dp)
@@ -272,11 +352,15 @@ private fun MessageBubble(
             )
         } else {
             Card(
-                modifier = Modifier.widthIn(max = maxWidth)
+                modifier = Modifier.widthIn(max = maxWidth),
+                colors = androidx.compose.material3.CardDefaults.cardColors(color)
             ) {
                 Text(
                     text = message.text.orEmpty(),
-                    modifier = Modifier.padding(12.dp)
+                    modifier = Modifier.padding(12.dp),
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        color = fontColor
+                    )
                 )
             }
         }
