@@ -137,7 +137,7 @@ fun FaketagramApp(
                             if (it == Screen.PROFILE) {
                                 Image(
                                     painter = painterResource(
-                                        uiState.getCurrentUserProfilePicture()
+                                        uiState.getCurrentUserProfilePicture()?: R.drawable.default_user
                                     ),
                                     contentDescription = "User photo",
                                     modifier = Modifier
