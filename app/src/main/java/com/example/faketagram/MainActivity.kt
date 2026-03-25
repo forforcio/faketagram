@@ -16,6 +16,7 @@ import com.google.firebase.auth.auth
 import com.google.firebase.database.database
 import com.google.firebase.storage.storage
 
+// 10.0.2.2 for local, 127.0.0.1 for real device
 private const val hostAddress = "127.0.0.1"
 
 class MainActivity : ComponentActivity() {

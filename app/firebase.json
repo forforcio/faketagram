@@ -5,7 +5,7 @@
   "storage": {
     "rules": "storage.rules"
   },
-    "emulators": {
+  "emulators": {
     "auth": {
       "port": 9099
     },
@@ -19,5 +19,15 @@
       "enabled": true
     },
     "singleProjectMode": false
+  },
+  "auth": {
+    "providers": {
+      "anonymous": true,
+      "emailPassword": true,
+      "googleSignIn": {
+        "oAuthBrandDisplayName": "meelt",
+        "supportEmail": "enrique.ortega.cabello@proton.me"
+      }
+    }
   }
 }
