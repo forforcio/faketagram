@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.widthIn
@@ -88,8 +89,7 @@ fun StartUserChatScreen(
 
     Scaffold(
         modifier = modifier
-            .fillMaxSize()
-            .imePadding(), topBar = {
+            .fillMaxSize(), topBar = {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -98,7 +98,6 @@ fun StartUserChatScreen(
                         MaterialTheme.colorScheme.primary
                     )
                     .padding(20.dp)
-                    .imePadding()
             ) {
                 Text(
                     text = user.username,
@@ -114,6 +113,7 @@ fun StartUserChatScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp)
+                    .navigationBarsPadding()
                     .imePadding(),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -174,8 +174,7 @@ fun StartUserChatScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(20.dp)
-                .imePadding(),
+                .padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(3.dp),
             reverseLayout = true
         ) {
@@ -209,8 +208,7 @@ fun MessageDisplay(
 ) {
     Row(
         modifier = Modifier
-            .fillMaxWidth()
-            .imePadding(),
+            .fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.Bottom
     ) {
