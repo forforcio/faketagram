@@ -63,6 +63,7 @@ fun StartChatScreen(
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.meelt_logo),
+                        contentDescription = "App logo",
                         modifier = Modifier
                             .fillMaxSize()
                             .align(Alignment.BottomCenter),
@@ -73,6 +74,7 @@ fun StartChatScreen(
                         Image(
                             painter = painterResource(uiState.getCurrentUserProfilePicture()
                                 ?: R.drawable.default_user),
+                            contentDescription = "User photo",
                             modifier = Modifier
                                 .clip(CircleShape)
                                 .requiredSize(28.dp)
