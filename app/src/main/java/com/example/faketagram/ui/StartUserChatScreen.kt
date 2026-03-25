@@ -7,6 +7,7 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,14 +24,20 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.Image
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -67,7 +74,6 @@ fun StartUserChatScreen(
         senderId = user.firebaseUid
     )
     var textToSend by rememberSaveable { mutableStateOf("") }
-    var photoMenuExpanded by remember { mutableStateOf(false) }
     var cameraTempUri by remember { mutableStateOf<Uri?>(null) }
 
     val pickPhotoLauncher = rememberLauncherForActivityResult(
@@ -115,7 +121,7 @@ fun StartUserChatScreen(
                     .imePadding(),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                OutlinedTextField(
+                TextField(
                     value = textToSend,
                     onValueChange = { textToSend = it },
                     modifier = Modifier
@@ -124,46 +130,47 @@ fun StartUserChatScreen(
                     placeholder = { Text("Escribe un mensaje...") },
                     singleLine = true,
                 )
-                Button(
-                    onClick = {
-                        val cleanedText = textToSend.trim()
-                        if (cleanedText.isNotEmpty()) {
-                            onSendMessage(cleanedText)
-                            textToSend = ""
-                        }
-                    },
-                    modifier = Modifier.padding(start = 8.dp),
-                ) {
-                    Text("Enviar")
-                }
-                Box {
-                    Button(onClick = { photoMenuExpanded = true }) {
-                        Text("Foto")
-                    }
-                    DropdownMenu(
-                        expanded = photoMenuExpanded,
-                        onDismissRequest = { photoMenuExpanded = false }
-                    ) {
-                        DropdownMenuItem(
-                            text = { Text("Galeria") },
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Send icon",
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .clickable(
                             onClick = {
-                                photoMenuExpanded = false
-                                pickPhotoLauncher.launch(
-                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                                )
+                                val cleanedText = textToSend.trim()
+                                if (cleanedText.isNotEmpty()) {
+                                    onSendMessage(cleanedText)
+                                    textToSend = ""
+                                }
                             }
                         )
-                        DropdownMenuItem(
-                            text = { Text("Camara") },
+                )
+                Icon(
+                    imageVector = Icons.Default.CameraAlt,
+                    contentDescription = "Take photo icon",
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .clickable(
                             onClick = {
-                                photoMenuExpanded = false
                                 val outputUri = createTempImageUri(context)
                                 cameraTempUri = outputUri
                                 takePhotoLauncher.launch(outputUri)
                             }
                         )
-                    }
-                }
+                )
+                Icon(
+                    imageVector = Icons.Default.Image,
+                    contentDescription = "Gallery search icon",
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .clickable(
+                            onClick = {
+                                pickPhotoLauncher.launch(
+                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                )
+                            }
+                        )
+                )
             }
         }
     ) { innerPadding ->
