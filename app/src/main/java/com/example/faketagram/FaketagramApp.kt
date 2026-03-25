@@ -133,7 +133,6 @@ fun FaketagramApp(
                                 contentDescription = it.label
                             )
                         },
-                        label = { Text(it.label) },
                         selected = it == currentDestination,
                         onClick = {
                             currentDestination = it
