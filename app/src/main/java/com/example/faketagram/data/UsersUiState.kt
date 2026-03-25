@@ -4,12 +4,20 @@ import com.example.faketagram.data.model.Message
 import com.example.faketagram.data.model.User
 
 data class UsersUiState(
-    val users: List<User>,
-    val messages: List<Message> = emptyList(),
-    val currentUserUid: String = "",
-    val isLoading: Boolean = false,
-    val error: String? = null,
+    private val users: List<User>,
+    private val messages: List<Message> = emptyList(),
+    private val authenticatedUserUid: String = "",
+    private val isLoading: Boolean = false,
+    private val error: String? = null,
 ) {
+
+    fun getAuthenticatedUserUid(): String {
+        return authenticatedUserUid
+    }
+
+    fun getUsersExceptCurrent(): List<User> {
+        return users.filter { it.firebaseUid != authenticatedUserUid }
+    }
 
     fun getUserById(userId: Int): User {
         val user = users.find { it.userId == userId }
@@ -41,12 +49,12 @@ data class UsersUiState(
 
     fun getIncomingMessagesForCurrentUser(senderId: String): List<Message> {
         val otherUid = users.find { it.firebaseUid == senderId }?.firebaseUid ?: return emptyList()
-        if (currentUserUid.isBlank()) return emptyList()
+        if (authenticatedUserUid.isBlank()) return emptyList()
 
         return messages
             .filter { m ->
-                (m.senderUid == currentUserUid && m.receiverUid == otherUid) ||
-                        (m.senderUid == otherUid && m.receiverUid == currentUserUid)
+                (m.senderUid == authenticatedUserUid && m.receiverUid == otherUid) ||
+                        (m.senderUid == otherUid && m.receiverUid == authenticatedUserUid)
             }
             .sortedByDescending { it.timestamp }
     }
