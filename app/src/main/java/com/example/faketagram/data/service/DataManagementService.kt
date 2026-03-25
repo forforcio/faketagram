@@ -1,15 +1,14 @@
 package com.example.faketagram.data.service
 
-import com.example.faketagram.data.`interface`.DataManagementInterface
 import com.example.faketagram.data.model.User
 import kotlinx.serialization.json.Json
 
-class DataManagementService: DataManagementInterface {
+class DataManagementService {
 
     lateinit var users: List<User>
 
     context(resources: ResourcesService)
-    override fun getUsersFromJson(resId: Int) {
+    fun getUsersFromJson(resId: Int) {
         val jsonString = resources.getJsonTextById(resId)
 
         users = Json.decodeFromString<List<User>>(jsonString).map { user ->
@@ -18,7 +17,7 @@ class DataManagementService: DataManagementInterface {
         }
     }
 
-    override fun getAllUsers(): List<User> {
+    fun getAllUsers(): List<User> {
         return users
     }
 
