@@ -19,6 +19,11 @@ data class UsersUiState(
         return users.filter { it.firebaseUid != authenticatedUserUid }
     }
 
+    fun getCurrentUserProfilePicture(): Int {
+        val currentUser = users.find { it.firebaseUid == authenticatedUserUid }
+        return currentUser?.resId ?: 0
+    }
+
     fun getUserById(userId: Int): User {
         val user = users.find { it.userId == userId }
         if (user == null) {
