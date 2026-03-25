@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -29,7 +30,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.example.faketagram.R
 import com.example.faketagram.data.UsersUiState
 import com.example.faketagram.data.model.User
 
@@ -43,21 +46,52 @@ fun StartChatScreen(
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(80.dp)
-                    .background(
-                        MaterialTheme.colorScheme.primary
+            Column {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(110.dp)
+                        .background(
+                            Color.Transparent
+                        )
+                        .padding(top = 25.dp)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.meelt_logo),
+                        contentDescription = "User photo",
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .align(Alignment.BottomCenter),
                     )
-                    .padding(20.dp)
-            ) {
-                Text(
-                    text = "Marranos.com",
-                    modifier = Modifier.align(Alignment.BottomStart),
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = Color.White,
-                    fontWeight = FontWeight.SemiBold
+                }
+                Box(
+                    modifier = Modifier
+                        .padding(horizontal = 10.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .fillMaxWidth()
+                        .height(40.dp)
+                        .background(
+                            Color.LightGray
+                        )
+                        .padding(10.dp)
+                ) {
+                    Text(
+                        text = "\uD83D\uDD0D\uFE0E Buscar",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.Gray,
+                        modifier = Modifier
+                            .align(Alignment.CenterStart),
+                    )
+                }
+                Text (
+                    text = "Mensajes",
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color.Black
+                    ),
+                    modifier = Modifier
+                        .padding(horizontal = 15.dp)
+                        .padding(vertical = 15.dp)
                 )
             }
         }
@@ -66,7 +100,7 @@ fun StartChatScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(top = 0.dp),
+                .padding(vertical = 0.dp),
             verticalArrangement = Arrangement.spacedBy(5.dp),
             contentPadding = PaddingValues(0.dp),
         ) {
@@ -91,8 +125,8 @@ fun ChatView(
         modifier = Modifier
             .fillMaxWidth()
             .padding(
-                vertical = 5.dp,
-                horizontal = 15.dp
+                vertical = 0.dp,
+                horizontal = 20.dp
             )
             .clickable(
                 indication = null,
@@ -107,16 +141,14 @@ fun ChatView(
                 contentDescription = "User photo",
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
-                    .size(70.dp)
+                    .size(50.dp)
                     .clip(CircleShape)
                     .fillMaxSize(),
                 contentScale = ContentScale.Crop
             )
-            Box(
-
-            ) {
+            Box {
                 Column(modifier = Modifier
-                    .padding(18.dp)
+                    .padding(horizontal = 15.dp, vertical = 8.dp)
                     .fillMaxSize()
                 ) {
                     Text(
@@ -124,13 +156,16 @@ fun ChatView(
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.ExtraBold,
                             color = Color.Black
-                        )
+                        ),
+                        modifier = Modifier.padding(bottom = 6.dp)
                     )
                     Text(
-                        text = "3 mensajes no leidos",
+                        text = "Ultimo mensaje leído (no implementado)",
                         style = MaterialTheme.typography.bodySmall.copy(
                             color = Color.Black
-                        )
+                        ),
+                        overflow= TextOverflow.Ellipsis,
+                        maxLines = 1
                     )
                 }
             }
