@@ -1,5 +1,6 @@
 package com.example.faketagram.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,8 +15,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.faketagram.R
 
 @Composable
 fun StartProfileScreen(
@@ -28,18 +31,18 @@ fun StartProfileScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(80.dp)
+                    .height(110.dp)
                     .background(
-                        MaterialTheme.colorScheme.primary
+                        Color.Transparent
                     )
-                    .padding(20.dp)
+                    .padding(top = 25.dp)
             ) {
-                Text(
-                    text = "Marranos.com",
-                    modifier = Modifier.align(Alignment.BottomStart),
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = Color.White,
-                    fontWeight = FontWeight.SemiBold
+                Image(
+                    painter = painterResource(id = R.drawable.meelt_logo),
+                    contentDescription = "App logo",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .align(Alignment.BottomCenter),
                 )
             }
         }

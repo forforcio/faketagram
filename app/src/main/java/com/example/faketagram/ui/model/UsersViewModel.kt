@@ -83,7 +83,7 @@ class UsersViewModel: ViewModel() {
     }
 
     fun sendMessage(receiverUid: String, text: String) {
-        val senderUid = _uiState.value.getAuthenticatedUserUid()
+        val senderUid = _uiState.value.authenticatedUserUid
         val currentUser = Firebase.auth.currentUser
 
         Log.d("UsersViewModel", "=== sendMessage called ===")

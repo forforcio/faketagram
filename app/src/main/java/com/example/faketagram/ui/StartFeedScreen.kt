@@ -9,12 +9,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -22,11 +25,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.faketagram.R
 import com.example.faketagram.data.UsersUiState
 import com.example.faketagram.data.model.User
 
@@ -41,32 +49,54 @@ fun StartFeedScreen(
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(80.dp)
-                    .background(
-                        MaterialTheme.colorScheme.primary
+            Column() {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(110.dp)
+                        .background(
+                            Color.Transparent
+                        )
+                        .padding(top = 25.dp)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.meelt_logo),
+                        contentDescription = "User photo",
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .align(Alignment.BottomCenter),
                     )
-                    .padding(20.dp)
-            ) {
-                Text(
-                    text = "Marranos.com",
-                    modifier = Modifier.align(Alignment.BottomStart),
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = Color.White,
-                    fontWeight = FontWeight.SemiBold
-                )
+                }
+                Box(
+                    modifier = Modifier
+                        .padding(horizontal = 10.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .fillMaxWidth()
+                        .height(40.dp)
+                        .background(
+                            MaterialTheme.colorScheme.secondary
+                        )
+                        .padding(10.dp)
+                ) {
+                    Text(
+                        text = "CERCA DE TI",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier
+                            .align(Alignment.CenterStart),
+                    )
+                }
             }
         }
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
-                .fillMaxSize()
                 .padding(innerPadding)
-                .padding(top = 0.dp),
-            verticalArrangement = Arrangement.spacedBy(0.dp),
-            contentPadding = PaddingValues(0.dp)
+                .fillMaxSize()
+                .width(250.dp)
+                .padding(horizontal = 40.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             items(users) { user ->
                 SocialPostCard(
@@ -86,15 +116,16 @@ fun SocialPostCard(
 ) {
     Box(
         modifier = Modifier
+            .padding(10.dp)
             .fillMaxWidth()
-            .padding(0.dp)
+            .padding(5.dp)
     ) {
         Image(
             painter = painterResource(user.resId),
             contentDescription = "User photo",
             modifier = Modifier
                 .fillMaxWidth()
-                .aspectRatio(1f)
+                .clip(RoundedCornerShape(8.dp))
                 .clickable(
                     indication = null,
                     interactionSource = remember { MutableInteractionSource() }
@@ -103,24 +134,9 @@ fun SocialPostCard(
         )
         Column(modifier = Modifier.padding(18.dp)) {
             Text(
-                text = user.username,
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.ExtraBold,
-                    color = Color.White
-                )
-            )
-            Text(
-                text = user.age.toString(),
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    color = Color.White
-                )
+                text = "${user.username}, ${user.age}",
+                style = MaterialTheme.typography.bodyLarge
             )
         }
-    }
-    Column(modifier = Modifier.padding(15.dp)) {
-        Text(
-            text = user.bio,
-            style = MaterialTheme.typography.bodyMedium
-        )
     }
 }

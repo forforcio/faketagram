@@ -1,22 +1,27 @@
 package com.example.faketagram
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -25,9 +30,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.faketagram.data.model.User
 import com.example.faketagram.data.service.DataManagementService
@@ -45,8 +50,6 @@ fun FaketagramApp(
     viewModel: UsersViewModel = viewModel(),
     navController: NavHostController = rememberNavController()
 ) {
-    var currentDestination by rememberSaveable { mutableStateOf(Screen.HOME) }
-
     val context = LocalContext.current
     val dataService = remember { DataManagementService() }
     val resourcesService = remember(context) { ResourcesService(context) }
@@ -67,12 +70,12 @@ fun FaketagramApp(
             viewModel.init()
         }
     }
-    
-    val appContent: @Composable () -> Unit = {
+
+    val appContent: @Composable (Modifier) -> Unit = { modifier ->
         NavHost(
             navController = navController,
             startDestination = Screen.HOME.name,
-            modifier = Modifier
+            modifier = modifier
         ) {
             composable(route = Screen.HOME.name) {
                 StartFeedScreen(
@@ -129,43 +132,76 @@ fun FaketagramApp(
     }
 
     if (showNavBar) {
-        NavigationSuiteScaffold(
-            navigationSuiteItems = {
-                Screen.entries.forEach {
-                    item(
-                        icon = {
-                            if (it == Screen.PROFILE) {
-                                Image(
-                                    painter = painterResource(
-                                        uiState.getCurrentUserProfilePicture()?: R.drawable.default_user
-                                    ),
-                                    contentDescription = "User photo",
-                                    modifier = Modifier
-                                        .clip(CircleShape)
-                                        .requiredSize(35.dp),
-                                    contentScale = ContentScale.Crop
-                                )
+        Box(modifier = Modifier.fillMaxSize()) {
+            // Draw the screen first and place the bar on top.
+            appContent(Modifier.fillMaxSize())
+
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .imePadding()
+            ) {
+                EditableBottomBar(
+                    selectedRoute = route,
+                    profileImageRes = uiState.getCurrentUserProfilePicture()
+                        ?: R.drawable.default_user,
+                    onScreenSelected = { screen ->
+                        navController.navigate(screen.name) {
+                            launchSingleTop = true
+                            restoreState = true
+                            popUpTo(navController.graph.startDestinationId) {
+                                saveState = true
                             }
-                            else {
-                                Icon(
-                                    it.icon,
-                                    contentDescription = it.label
-                                )
-                            }
-                        },
-                        selected = it == currentDestination,
-                        onClick = {
-                            currentDestination = it
-                            navController.navigate(it.name)
                         }
-                    )
-                }
-            },
-            modifier = Modifier.imePadding(),
-        ) {
-            appContent()
+                    }
+                )
+            }
         }
     } else {
-        appContent()
+        appContent(Modifier.fillMaxSize())
+    }
+}
+
+@Composable
+private fun EditableBottomBar(
+    selectedRoute: String?,
+    profileImageRes: Int,
+    onScreenSelected: (Screen) -> Unit
+) {
+    NavigationBar(
+        containerColor = Color.White.copy(alpha = 0.6f),
+        modifier = Modifier
+            .height(90.dp)
+            .padding(0.dp)
+    ) {
+        Screen.entries.forEach { screen ->
+            NavigationBarItem(
+                selected = selectedRoute == screen.name,
+                onClick = { onScreenSelected(screen) },
+                icon = {
+                    if (screen == Screen.PROFILE) {
+                        Image(
+                            painter = painterResource(profileImageRes),
+                            contentDescription = "User photo",
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .requiredSize(28.dp)
+                                .border(
+                                    width = 2.dp,
+                                    color = MaterialTheme.colorScheme.secondary,
+                                    shape = CircleShape
+                                ),
+                            contentScale = ContentScale.Crop
+                        )
+                    } else {
+                        Icon(
+                            imageVector = screen.icon,
+                            contentDescription = screen.label,
+                            tint = MaterialTheme.colorScheme.secondary
+                        )
+                    }
+                }
+            )
+        }
     }
 }

@@ -4,15 +4,15 @@ import com.example.faketagram.data.model.Message
 import com.example.faketagram.data.model.User
 
 data class UsersUiState(
-    private val users: List<User>,
-    private val messages: List<Message> = emptyList(),
-    private val authenticatedUserUid: String = "",
-    private val isLoading: Boolean = false,
-    private val error: String? = null,
+    val users: List<User>,
+    val messages: List<Message> = emptyList(),
+    val authenticatedUserUid: String = "",
+    val isLoading: Boolean = false,
+    val error: String? = null,
 ) {
 
-    fun getAuthenticatedUserUid(): String {
-        return authenticatedUserUid
+    fun getAuthenticatedUser(): User? {
+        return users.find { it.firebaseUid == authenticatedUserUid }
     }
 
     fun getUsersExceptCurrent(): List<User> {
@@ -56,11 +56,31 @@ data class UsersUiState(
         val otherUid = users.find { it.firebaseUid == senderId }?.firebaseUid ?: return emptyList()
         if (authenticatedUserUid.isBlank()) return emptyList()
 
-        return messages
+        val result = messages
             .filter { m ->
                 (m.senderUid == authenticatedUserUid && m.receiverUid == otherUid) ||
                         (m.senderUid == otherUid && m.receiverUid == authenticatedUserUid)
             }
             .sortedByDescending { it.timestamp }
+
+        if (result.isEmpty()) {
+            val defaultList: List<Message> = listOf(
+                Message(
+                    text = "Que casualidad, yo también soy un mensaje de prueba!",
+                    senderUid = authenticatedUserUid,
+                    receiverUid = otherUid,
+                    timestamp = System.currentTimeMillis()
+                ),
+                Message(
+                    text = "Hola soy un mensaje de prueba",
+                    senderUid = otherUid,
+                    receiverUid = authenticatedUserUid,
+                    timestamp = System.currentTimeMillis()
+                )
+            )
+            return defaultList
+        } else {
+            return result
+        }
     }
 }
