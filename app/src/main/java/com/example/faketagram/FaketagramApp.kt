@@ -1,7 +1,15 @@
 package com.example.faketagram
 
+import android.media.Image
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
@@ -14,8 +22,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -23,6 +35,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.toRoute
+import coil.compose.AsyncImage
 import com.example.faketagram.data.model.User
 import com.example.faketagram.data.service.DataManagementService
 import com.example.faketagram.data.service.ResourcesService
@@ -128,10 +141,24 @@ fun FaketagramApp(
                 Screen.entries.forEach {
                     item(
                         icon = {
-                            Icon(
-                                it.icon,
-                                contentDescription = it.label
-                            )
+                            if (it == Screen.PROFILE) {
+                                Image(
+                                    painter = painterResource(
+                                        uiState.getCurrentUserProfilePicture()
+                                    ),
+                                    contentDescription = "User photo",
+                                    modifier = Modifier
+                                        .clip(CircleShape)
+                                        .requiredSize(35.dp),
+                                    contentScale = ContentScale.Crop
+                                )
+                            }
+                            else {
+                                Icon(
+                                    it.icon,
+                                    contentDescription = it.label
+                                )
+                            }
                         },
                         selected = it == currentDestination,
                         onClick = {
@@ -141,7 +168,7 @@ fun FaketagramApp(
                     )
                 }
             },
-            modifier = Modifier.imePadding()
+            modifier = Modifier.imePadding(),
         ) {
             appContent()
         }
