@@ -2,23 +2,18 @@ package com.example.faketagram
 
 import android.content.Intent
 import android.content.pm.ApplicationInfo
-import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.faketagram.data.model.Message
 import com.example.faketagram.ui.theme.FaketagramTheme
 import com.google.firebase.Firebase
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
-import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.database
-import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.storage
 
 private const val hostAddress = "127.0.0.1"
@@ -31,10 +26,6 @@ class MainActivity : ComponentActivity() {
 
         FirebaseApp.initializeApp(this)
 
-        // When running in debug mode, connect to the Firebase Emulator Suite.
-        // "10.0.2.2" is a special IP address which allows the Android Emulator
-        // to connect to "localhost" on the host computer. The port values (9xxx)
-        // must match the values defined in the firebase.json file.
         if (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0) {
             Firebase.database.useEmulator(hostAddress, 9000)
             Firebase.auth.useEmulator(hostAddress, 9099)
