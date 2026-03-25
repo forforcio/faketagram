@@ -15,6 +15,10 @@ data class UsersUiState(
         return authenticatedUserUid
     }
 
+    fun getAuthenticatedUser(): User? {
+        return users.find { it.firebaseUid == authenticatedUserUid }
+    }
+
     fun getUsersExceptCurrent(): List<User> {
         return users.filter { it.firebaseUid != authenticatedUserUid }
     }

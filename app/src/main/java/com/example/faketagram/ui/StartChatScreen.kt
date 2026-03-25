@@ -2,6 +2,7 @@ package com.example.faketagram.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -46,7 +48,10 @@ fun StartChatScreen(
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
-            Column {
+            Column (
+                modifier = Modifier.padding(horizontal = 15.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -58,20 +63,46 @@ fun StartChatScreen(
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.meelt_logo),
-                        contentDescription = "User photo",
                         modifier = Modifier
                             .fillMaxSize()
                             .align(Alignment.BottomCenter),
                     )
                 }
+                Box {
+                    Row {
+                        Image(
+                            painter = painterResource(uiState.getCurrentUserProfilePicture()
+                                ?: R.drawable.default_user),
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .requiredSize(28.dp)
+                                .border(
+                                    width = 2.dp,
+                                    color = MaterialTheme.colorScheme.secondary,
+                                    shape = CircleShape
+                                ),
+                            contentScale = ContentScale.Crop
+                        )
+                        Text(
+                            text = uiState.getAuthenticatedUser()?.username ?: "usuario no encontrado",
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                fontWeight = FontWeight.ExtraBold,
+                                color = Color.Black
+                            ),
+                            modifier = Modifier
+                                .padding(horizontal = 15.dp)
+                                .align(Alignment.CenterVertically)
+                        )
+                    }
+
+                }
                 Box(
                     modifier = Modifier
-                        .padding(horizontal = 10.dp)
                         .clip(RoundedCornerShape(12.dp))
                         .fillMaxWidth()
                         .height(40.dp)
                         .background(
-                            Color.LightGray
+                            MaterialTheme.colorScheme.surface
                         )
                         .padding(10.dp)
                 ) {
