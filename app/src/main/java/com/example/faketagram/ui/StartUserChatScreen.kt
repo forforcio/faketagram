@@ -226,7 +226,7 @@ fun MessageDisplay(
             ) {
                 MessageBubble(
                     message = message,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
                 )
             }
         } else {
@@ -236,7 +236,7 @@ fun MessageDisplay(
             ) {
                 MessageBubble(
                     message = message,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
                 )
             }
             Image(
