@@ -18,6 +18,7 @@ mockitoCore = "5.23.0"
 navigationCompose = "2.9.7"
 playServicesAuth = "21.5.1"
 appcompat = "1.7.1"
+firebaseAuthKtx = "24.0.1"
 
 [libraries]
 androidx-compose-bom-vtuversionbom = { module = "androidx.compose:compose-bom", version.ref = "composeBomVersion" }
@@ -49,6 +50,7 @@ kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockitoCore" }
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
