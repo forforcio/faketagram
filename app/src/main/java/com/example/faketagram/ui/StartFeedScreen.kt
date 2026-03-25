@@ -37,7 +37,7 @@ fun StartFeedScreen(
     onUserPhotoClicked: (User) -> Unit,
     modifier: Modifier
 ) {
-    val users: List<User> = uiState.users
+    val users: List<User> = uiState.getUsersExceptCurrent()
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {

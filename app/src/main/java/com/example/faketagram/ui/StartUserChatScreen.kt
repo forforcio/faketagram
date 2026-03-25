@@ -24,7 +24,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -85,14 +84,6 @@ fun StartUserChatScreen(
         }
     }
 
-    val sendCurrentMessage = {
-        val cleanedText = textToSend.trim()
-        if (cleanedText.isNotEmpty()) {
-            onSendMessage(cleanedText)
-            textToSend = ""
-        }
-    }
-
     Scaffold(
         modifier = modifier
             .fillMaxSize()
@@ -117,71 +108,60 @@ fun StartUserChatScreen(
             }
         },
         bottomBar = {
-            BoxWithConstraints(
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp)
-                    .imePadding()
+                    .imePadding(),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                val isCompactComposer = maxWidth < 360.dp
-                val composerSpacing = if (isCompactComposer) 4.dp else 8.dp
-                val actionButtonPadding = if (isCompactComposer) {
-                    ButtonDefaults.ButtonWithIconContentPadding
-                } else {
-                    ButtonDefaults.ContentPadding
-                }
-                val sendButtonLabel = if (isCompactComposer) "Env." else "Enviar"
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(composerSpacing),
-                    verticalAlignment = Alignment.CenterVertically,
+                OutlinedTextField(
+                    value = textToSend,
+                    onValueChange = { textToSend = it },
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(start = 8.dp),
+                    placeholder = { Text("Escribe un mensaje...") },
+                    singleLine = true,
+                )
+                Button(
+                    onClick = {
+                        val cleanedText = textToSend.trim()
+                        if (cleanedText.isNotEmpty()) {
+                            onSendMessage(cleanedText)
+                            textToSend = ""
+                        }
+                    },
+                    modifier = Modifier.padding(start = 8.dp),
                 ) {
-                    OutlinedTextField(
-                        value = textToSend,
-                        onValueChange = { textToSend = it },
-                        modifier = Modifier
-                            .weight(1f)
-                            .widthIn(min = 0.dp),
-                        placeholder = { Text("Escribe un mensaje...") },
-                        singleLine = true,
-                    )
-                    Button(
-                        onClick = sendCurrentMessage,
-                        contentPadding = actionButtonPadding,
-                    ) {
-                        Text(sendButtonLabel)
+                    Text("Enviar")
+                }
+                Box {
+                    Button(onClick = { photoMenuExpanded = true }) {
+                        Text("Foto")
                     }
-                    Box {
-                        Button(
-                            onClick = { photoMenuExpanded = true },
-                            contentPadding = actionButtonPadding,
-                        ) {
-                            Text("Foto")
-                        }
-                        DropdownMenu(
-                            expanded = photoMenuExpanded,
-                            onDismissRequest = { photoMenuExpanded = false }
-                        ) {
-                            DropdownMenuItem(
-                                text = { Text("Galeria") },
-                                onClick = {
-                                    photoMenuExpanded = false
-                                    pickPhotoLauncher.launch(
-                                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                                    )
-                                }
-                            )
-                            DropdownMenuItem(
-                                text = { Text("Camara") },
-                                onClick = {
-                                    photoMenuExpanded = false
-                                    val outputUri = createTempImageUri(context)
-                                    cameraTempUri = outputUri
-                                    takePhotoLauncher.launch(outputUri)
-                                }
-                            )
-                        }
+                    DropdownMenu(
+                        expanded = photoMenuExpanded,
+                        onDismissRequest = { photoMenuExpanded = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Galeria") },
+                            onClick = {
+                                photoMenuExpanded = false
+                                pickPhotoLauncher.launch(
+                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                )
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Camara") },
+                            onClick = {
+                                photoMenuExpanded = false
+                                val outputUri = createTempImageUri(context)
+                                cameraTempUri = outputUri
+                                takePhotoLauncher.launch(outputUri)
+                            }
+                        )
                     }
                 }
             }
@@ -246,7 +226,7 @@ fun MessageDisplay(
             ) {
                 MessageBubble(
                     message = message,
-                    modifier = Modifier
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
         } else {
@@ -256,7 +236,7 @@ fun MessageDisplay(
             ) {
                 MessageBubble(
                     message = message,
-                    modifier = Modifier
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
             Image(

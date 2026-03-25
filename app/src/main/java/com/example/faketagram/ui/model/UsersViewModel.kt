@@ -49,7 +49,7 @@ class UsersViewModel: ViewModel() {
             _uiState.update {
                 it.copy(
                     users = users,
-                    currentUserUid = currentUserUid,
+                    authenticatedUserUid = currentUserUid,
                     isLoading = false
                 )
             }
@@ -83,7 +83,7 @@ class UsersViewModel: ViewModel() {
     }
 
     fun sendMessage(receiverUid: String, text: String) {
-        val senderUid = _uiState.value.currentUserUid
+        val senderUid = _uiState.value.getAuthenticatedUserUid()
         val currentUser = Firebase.auth.currentUser
 
         Log.d("UsersViewModel", "=== sendMessage called ===")
@@ -192,7 +192,6 @@ class UsersViewModel: ViewModel() {
     companion object {
         private const val TAG = "MainActivity"
         const val MESSAGES_CHILD = "messages"
-        const val ANONYMOUS = "anonymous"
         private const val LOADING_IMAGE_URL = "https://www.google.com/images/spin-32.gif"
     }
 }
