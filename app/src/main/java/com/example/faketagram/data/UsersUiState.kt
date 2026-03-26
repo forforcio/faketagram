@@ -31,11 +31,16 @@ data class UsersUiState(
                 userId = 0,
                 username = "Unexistent user",
                 age = 0,
+                distance = 0.0,
                 bio = "this user does not exist",
                 resName = "wenaso_1",
             )
         }
         return user
+    }
+
+    fun isUserBlocked(userId: Int): Boolean {
+        return users.find { it.userId == userId }?.isBlocked == true
     }
 
     fun getUserByFirebaseUid(firebaseUid: String): User {
@@ -45,6 +50,7 @@ data class UsersUiState(
                 userId = 0,
                 username = "Unexistent user",
                 age = 0,
+                distance = 0.0,
                 bio = "this user does not exist",
                 resName = "wenaso_1",
             )
