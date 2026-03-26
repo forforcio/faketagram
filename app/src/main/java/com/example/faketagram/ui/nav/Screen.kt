@@ -5,6 +5,7 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ChatBubbleOutline
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.ui.graphics.vector.ImageVector
+import kotlinx.serialization.Serializable
 
 enum class Screen(
     val label: String,
@@ -14,3 +15,13 @@ enum class Screen(
     CHAT("Chat", Icons.Default.ChatBubbleOutline),
     PROFILE("Profile", Icons.Default.AccountCircle)
 }
+
+@Serializable
+data class UserProfileRoute(
+    val userId: Int,
+)
+
+@Serializable
+data class UserChatRoute(
+    val userId: Int,
+)

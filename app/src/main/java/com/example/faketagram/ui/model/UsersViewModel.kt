@@ -132,6 +132,26 @@ class UsersViewModel: ViewModel() {
         Firebase.auth.signOut()
     }
 
+    fun blockUser(userId: Int) {
+        _uiState.update { state ->
+            state.copy(
+                users = state.users.map { user ->
+                    if (user.userId == userId) user.copy(isBlocked = true) else user
+                }
+            )
+        }
+    }
+
+    fun unblockUser(userId: Int) {
+        _uiState.update { state ->
+            state.copy(
+                users = state.users.map { user ->
+                    if (user.userId == userId) user.copy(isBlocked = false) else user
+                }
+            )
+        }
+    }
+
     fun onImageSelected(receiverUid: String, uri: Uri) {
         val user = Firebase.auth.currentUser
         val photoURL = user?.photoUrl?.toString()
@@ -195,4 +215,3 @@ class UsersViewModel: ViewModel() {
         private const val LOADING_IMAGE_URL = "https://www.google.com/images/spin-32.gif"
     }
 }
-

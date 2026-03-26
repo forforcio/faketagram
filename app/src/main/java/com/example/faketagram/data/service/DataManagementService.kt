@@ -10,17 +10,19 @@ class DataManagementService {
     context(resources: ResourcesService)
     fun getUsersFromJson(resId: Int) {
         val jsonString = resources.getJsonTextById(resId)
+        val json = Json {
+            ignoreUnknownKeys = true
+        }
 
-        users = Json.decodeFromString<List<User>>(jsonString).map { user ->
-            user.resId = resources.getResourceIdByImageName(user.resName)
-            user.copy()
+        users = json.decodeFromString<List<User>>(jsonString).map { user ->
+            user.copy(
+                resId = resources.getResourceIdByImageNameOrDefault(user.resName),
+                galleryResIds = resources.getResourceIdsByImageNames(user.galleryResName)
+            )
         }
     }
 
     fun getAllUsers(): List<User> {
         return users
     }
-
-
-
 }

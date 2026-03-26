@@ -9,9 +9,14 @@ data class User (
     val username: String = "default user",
     val firebaseUid: String = "zero",
     val age: Int = 0,
+    val distance: Double = 0.0,
     val bio: String = "this is default user's bio",
-    val resName: String = "wenaso_1",
+    val resName: String = "default_user",
+    val galleryResName: List<String> = emptyList(),
+    val isBlocked: Boolean = false,
     @Transient
     var resId: Int = 0,
+    @Transient
+    val galleryResIds: List<Int> = emptyList(),
 ) {
 }

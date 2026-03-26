@@ -34,15 +34,18 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.example.faketagram.data.model.User
 import com.example.faketagram.data.service.DataManagementService
 import com.example.faketagram.data.service.ResourcesService
+import com.example.faketagram.ui.StartBlockedUserScreen
 import com.example.faketagram.ui.StartChatScreen
 import com.example.faketagram.ui.StartFeedScreen
 import com.example.faketagram.ui.StartProfileScreen
 import com.example.faketagram.ui.StartUserChatScreen
+import com.example.faketagram.ui.StartUserProfileScreen
 import com.example.faketagram.ui.model.UsersViewModel
 import com.example.faketagram.ui.nav.Screen
+import com.example.faketagram.ui.nav.UserChatRoute
+import com.example.faketagram.ui.nav.UserProfileRoute
 
 @PreviewScreenSizes
 @Composable
@@ -56,11 +59,22 @@ fun FaketagramApp(
 
     val backStackEntry by navController.currentBackStackEntryAsState()
     val route = backStackEntry?.destination?.route
-    val showNavBar = route == Screen.HOME.name ||
-            route == Screen.CHAT.name ||
-            route == Screen.PROFILE.name
+    val isUserProfileRoute = route?.contains(UserProfileRoute::class.qualifiedName.orEmpty()) == true
+    val isUserChatRoute = route?.contains(UserChatRoute::class.qualifiedName.orEmpty()) == true
 
     val uiState by viewModel.uiState.collectAsState()
+
+    // Show nav bar on chat route only when user is blocked (shows blocked screen, not chat)
+    val blockedChatUserId = if (isUserChatRoute) {
+        try { backStackEntry?.toRoute<UserChatRoute>()?.userId } catch (_: Exception) { null }
+    } else null
+    val isChatRouteBlocked = blockedChatUserId != null && uiState.isUserBlocked(blockedChatUserId)
+
+    val showNavBar = route == Screen.HOME.name ||
+            route == Screen.CHAT.name ||
+            route == Screen.PROFILE.name ||
+            isUserProfileRoute ||
+            isChatRouteBlocked
 
     LaunchedEffect(Unit) {
         context(resourcesService) {
@@ -80,9 +94,9 @@ fun FaketagramApp(
             composable(route = Screen.HOME.name) {
                 StartFeedScreen(
                     uiState = uiState,
-                    onUserPhotoClicked = {
+                    onUserPhotoClicked = { user ->
                         navController.navigate(
-                            it
+                            UserProfileRoute(user.userId)
                         )
                     },
                     modifier = Modifier
@@ -92,33 +106,64 @@ fun FaketagramApp(
             composable(route = Screen.CHAT.name) {
                 StartChatScreen(
                     uiState = uiState,
-                    onUserClick = {
+                    onUserClick = { user ->
                         navController.navigate(
-                            it
+                            UserChatRoute(user.userId)
                         )
                     },
                     modifier = Modifier
                 )
             }
-            composable<User> { backStackEntry ->
-                val userChat: User = backStackEntry.toRoute()
-                StartUserChatScreen(
-                    uiState = uiState,
-                    userId = userChat.userId,
-                    modifier = Modifier,
-                    onSendMessage = { text ->
-                        viewModel.sendMessage(
-                            receiverUid = userChat.firebaseUid,
-                            text = text,
-                        )
-                    },
-                    onSendPhoto = { uri ->
-                        viewModel.onImageSelected(
-                            receiverUid = userChat.firebaseUid,
-                            uri = uri
-                        )
-                    }
-                )
+            composable<UserProfileRoute> { backStackEntry ->
+                val profileRoute: UserProfileRoute = backStackEntry.toRoute()
+                val selectedUser = uiState.getUserById(profileRoute.userId)
+
+                if (uiState.isUserBlocked(selectedUser.userId)) {
+                    StartBlockedUserScreen(
+                        user = selectedUser,
+                        modifier = Modifier.fillMaxSize(),
+                        onUnblock = { viewModel.unblockUser(it.userId) }
+                    )
+                } else {
+                    StartUserProfileScreen(
+                        user = selectedUser,
+                        modifier = Modifier.fillMaxSize(),
+                        onChatClick = {
+                            navController.navigate(UserChatRoute(selectedUser.userId))
+                        },
+                        onBlockClick = { viewModel.blockUser(it.userId) }
+                    )
+                }
+            }
+            composable<UserChatRoute> { backStackEntry ->
+                val chatRoute: UserChatRoute = backStackEntry.toRoute()
+                val userChat = uiState.getUserById(chatRoute.userId)
+
+                if (uiState.isUserBlocked(userChat.userId)) {
+                    StartBlockedUserScreen(
+                        user = userChat,
+                        modifier = Modifier.fillMaxSize(),
+                        onUnblock = { viewModel.unblockUser(it.userId) }
+                    )
+                } else {
+                    StartUserChatScreen(
+                        uiState = uiState,
+                        userId = userChat.userId,
+                        modifier = Modifier,
+                        onSendMessage = { text ->
+                            viewModel.sendMessage(
+                                receiverUid = userChat.firebaseUid,
+                                text = text,
+                            )
+                        },
+                        onSendPhoto = { uri ->
+                            viewModel.onImageSelected(
+                                receiverUid = userChat.firebaseUid,
+                                uri = uri
+                            )
+                        }
+                    )
+                }
             }
             composable(route = Screen.PROFILE.name) {
                 StartProfileScreen(
