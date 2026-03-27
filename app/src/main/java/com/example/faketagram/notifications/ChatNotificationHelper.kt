@@ -17,8 +17,6 @@ import com.example.faketagram.R
 
 object ChatNotificationHelper {
     private const val CHANNEL_ID = "chat_messages"
-    private const val CHANNEL_NAME = "Chat messages"
-    private const val CHANNEL_DESCRIPTION = "Notifications for new incoming chat messages"
     const val EXTRA_CHAT_USER_ID = "chat_user_id"
 
     fun createChannel(context: Context) {
@@ -27,10 +25,10 @@ object ChatNotificationHelper {
         val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val channel = NotificationChannel(
             CHANNEL_ID,
-            CHANNEL_NAME,
+            context.getString(R.string.notification_channel_name),
             NotificationManager.IMPORTANCE_DEFAULT
         ).apply {
-            description = CHANNEL_DESCRIPTION
+            description = context.getString(R.string.notification_channel_description)
         }
         manager.createNotificationChannel(channel)
     }

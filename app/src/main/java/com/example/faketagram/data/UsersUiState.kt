@@ -1,5 +1,7 @@
 package com.example.faketagram.data
 
+import android.content.Context
+import com.example.faketagram.R
 import com.example.faketagram.data.model.Message
 import com.example.faketagram.data.model.User
 
@@ -24,15 +26,15 @@ data class UsersUiState(
         return currentUser?.resId
     }
 
-    fun getUserById(userId: Int): User {
+    fun getUserById(userId: Int, context: Context? = null): User {
         val user = users.find { it.userId == userId }
         if (user == null) {
             return User(
                 userId = 0,
-                username = "Unexistent user",
+                username = context?.getString(R.string.fallback_user_name) ?: "Usuario no encontrado",
                 age = 0,
                 distance = 0.0,
-                bio = "this user does not exist",
+                bio = context?.getString(R.string.fallback_user_bio) ?: "Este usuario no existe",
                 resName = "wenaso_1",
             )
         }
@@ -43,22 +45,22 @@ data class UsersUiState(
         return users.find { it.userId == userId }?.isBlocked == true
     }
 
-    fun getUserByFirebaseUid(firebaseUid: String): User {
+    fun getUserByFirebaseUid(firebaseUid: String, context: Context? = null): User {
         val user = users.find { it.firebaseUid == firebaseUid }
         if (user == null) {
             return User(
                 userId = 0,
-                username = "Unexistent user",
+                username = context?.getString(R.string.fallback_user_name) ?: "Usuario no encontrado",
                 age = 0,
                 distance = 0.0,
-                bio = "this user does not exist",
+                bio = context?.getString(R.string.fallback_user_bio) ?: "Este usuario no existe",
                 resName = "default_user",
             )
         }
         return user
     }
 
-    fun getIncomingMessagesForCurrentUser(senderId: String): List<Message> {
+    fun getIncomingMessagesForCurrentUser(senderId: String, context: Context? = null): List<Message> {
         val otherUid = users.find { it.firebaseUid == senderId }?.firebaseUid ?: return emptyList()
         if (authenticatedUserUid.isBlank()) return emptyList()
 
@@ -72,13 +74,15 @@ data class UsersUiState(
         if (result.isEmpty()) {
             val defaultList: List<Message> = listOf(
                 Message(
-                    text = "Que casualidad, yo también soy un mensaje de prueba!",
+                    text = context?.getString(R.string.fallback_message_demo_1)
+                        ?: "Que casualidad, yo tambien soy un mensaje de prueba!",
                     senderUid = authenticatedUserUid,
                     receiverUid = otherUid,
                     timestamp = System.currentTimeMillis()
                 ),
                 Message(
-                    text = "Hola soy un mensaje de prueba",
+                    text = context?.getString(R.string.fallback_message_demo_2)
+                        ?: "Hola soy un mensaje de prueba",
                     senderUid = otherUid,
                     receiverUid = authenticatedUserUid,
                     timestamp = System.currentTimeMillis()

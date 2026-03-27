@@ -34,6 +34,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.faketagram.R
@@ -66,7 +67,7 @@ fun StartUserProfileScreen(
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.meelt_logo),
-                    contentDescription = "User photo",
+                    contentDescription = stringResource(R.string.content_desc_app_logo),
                     modifier = Modifier
                         .fillMaxSize()
                         .align(Alignment.BottomCenter),
@@ -120,7 +121,7 @@ private fun ProfilePhotoCard(
     ) {
         Image(
             painter = painterResource(photoResId),
-            contentDescription = "Profile photo",
+            contentDescription = stringResource(R.string.content_desc_profile_photo),
             modifier = Modifier
                 .fillMaxWidth(),
             contentScale = ContentScale.FillWidth
@@ -153,13 +154,13 @@ private fun BoxScope.MainProfileOverlay(user: User) {
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
         Text(
-            text = "${user.username}, ${user.age}",
+            text = stringResource(R.string.common_user_name_age, user.username, user.age),
             style = MaterialTheme.typography.headlineSmall,
             color = Color.White,
             fontWeight = FontWeight.Bold
         )
         Text(
-            text = "a ${formatDistanceKm(user.distance)} km de distancia",
+            text = stringResource(R.string.profile_distance, formatDistanceKm(user.distance)),
             style = MaterialTheme.typography.bodyLarge,
             color = Color.White
         )
@@ -175,7 +176,7 @@ private fun BoxScope.AboutMeOverlay(bio: String) {
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text(
-            text = "Sobre mí",
+            text = stringResource(R.string.profile_about_me),
             style = MaterialTheme.typography.titleLarge,
             color = Color.White,
             fontWeight = FontWeight.Bold
@@ -208,17 +209,17 @@ private fun BoxScope.BottomActionsOverlay(
     ) {
         ProfileActionIcon(
             imageVector = Icons.AutoMirrored.Rounded.Chat,
-            contentDescription = "Open chat",
+            contentDescription = stringResource(R.string.profile_action_open_chat),
             onClick = onChatClick
         )
         ProfileActionIcon(
             imageVector = Icons.Rounded.Stars,
-            contentDescription = "Favorite",
+            contentDescription = stringResource(R.string.profile_action_favorite),
             onClick = {}
         )
         ProfileActionIcon(
             imageVector = Icons.Rounded.Block,
-            contentDescription = "Block",
+            contentDescription = stringResource(R.string.profile_action_block),
             onClick = onBlockClick
         )
     }
@@ -250,3 +251,4 @@ private fun ProfileActionIcon(
 private fun formatDistanceKm(distance: Double): String {
     return String.format(Locale.US, "%.1f", distance)
 }
+

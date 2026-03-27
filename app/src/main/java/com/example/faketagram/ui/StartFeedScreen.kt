@@ -27,6 +27,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.faketagram.R
 import com.example.faketagram.data.UsersUiState
@@ -55,7 +56,7 @@ fun StartFeedScreen(
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.meelt_logo),
-                        contentDescription = "User photo",
+                        contentDescription = stringResource(R.string.content_desc_app_logo),
                         modifier = Modifier
                             .fillMaxSize()
                             .align(Alignment.BottomCenter),
@@ -73,7 +74,7 @@ fun StartFeedScreen(
                         .padding(10.dp)
                 ) {
                     Text(
-                        text = "CERCA DE TI",
+                        text = stringResource(R.string.feed_near_you),
                         style = MaterialTheme.typography.titleLarge,
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier
@@ -116,7 +117,7 @@ fun SocialPostCard(
     ) {
         Image(
             painter = painterResource(user.resId),
-            contentDescription = "User photo",
+            contentDescription = stringResource(R.string.content_desc_user_photo),
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(4f / 5f)
@@ -129,7 +130,7 @@ fun SocialPostCard(
         )
         Column(modifier = Modifier.padding(18.dp)) {
             Text(
-                text = "${user.username}, ${user.age}",
+                text = stringResource(R.string.common_user_name_age, user.username, user.age),
                 style = MaterialTheme.typography.bodyLarge
             )
         }
