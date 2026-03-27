@@ -160,7 +160,7 @@ private fun BoxScope.MainProfileOverlay(user: User) {
             fontWeight = FontWeight.Bold
         )
         Text(
-            text = stringResource(R.string.profile_distance, formatDistanceKm(user.distance)),
+            text = stringResource(R.string.chat_distance_from_you, formatDistanceKm(user.distance)),
             style = MaterialTheme.typography.bodyLarge,
             color = Color.White
         )
