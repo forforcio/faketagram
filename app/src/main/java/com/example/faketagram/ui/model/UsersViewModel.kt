@@ -1,5 +1,6 @@
 package com.example.faketagram.ui.model
 
+import android.content.Context
 import android.net.Uri
 import android.util.Log
 import com.example.faketagram.BuildConfig
@@ -8,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.faketagram.data.UsersUiState
 import com.example.faketagram.data.model.Message
 import com.example.faketagram.data.service.DataManagementService
+import com.example.faketagram.notifications.ChatNotificationHelper
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.database.DataSnapshot
@@ -38,8 +40,22 @@ class UsersViewModel: ViewModel() {
     val uiState: StateFlow<UsersUiState> = _uiState.asStateFlow()
     private var messagesListener: ValueEventListener? = null
 
-    context(dataService: DataManagementService)
+    // applicationContext is safe to keep in a ViewModel.
+    private var appContext: Context? = null
+    private var didBootstrapMessages = false
+    private val seenMessageKeys = mutableSetOf<String>()
+
+    // Tracks which user's chat is currently open so we skip notifications for it
+    @Volatile
+    private var activeChatUserId: Int? = null
+
+    fun setActiveChatUserId(userId: Int) { activeChatUserId = userId }
+    fun clearActiveChatUserId() { activeChatUserId = null }
+
+    context(dataService: DataManagementService, context: Context)
     fun init() {
+        appContext = context.applicationContext
+
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
 
@@ -58,17 +74,83 @@ class UsersViewModel: ViewModel() {
         }
     }
 
+    fun blockUser(userId: Int) {
+        _uiState.update { state ->
+            state.copy(
+                users = state.users.map { user ->
+                    if (user.userId == userId) user.copy(isBlocked = true) else user
+                }
+            )
+        }
+    }
+
+    fun unblockUser(userId: Int) {
+        _uiState.update { state ->
+            state.copy(
+                users = state.users.map { user ->
+                    if (user.userId == userId) user.copy(isBlocked = false) else user
+                }
+            )
+        }
+    }
+
     private fun startMessagesListener() {
         if (messagesListener != null) return
 
         val ref = db.getReference("messages")
         messagesListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val list = snapshot.children.mapNotNull { it.getValue(Message::class.java) }
+                val keyedMessages = snapshot.children.mapNotNull { child ->
+                    val message = child.getValue(Message::class.java) ?: return@mapNotNull null
+                    val key = child.key ?: buildFallbackMessageKey(message)
+                    key to message
+                }
+
+                val sortedMessages = keyedMessages
+                    .map { it.second }
                     .sortedBy { it.timestamp }
 
                 _uiState.update { current ->
-                    current.copy(messages = list, error = null)
+                    current.copy(messages = sortedMessages, error = null)
+                }
+
+                if (!didBootstrapMessages) {
+                    seenMessageKeys += keyedMessages.map { it.first }
+                    didBootstrapMessages = true
+                    return
+                }
+
+                val currentUserUid = _uiState.value.authenticatedUserUid
+                keyedMessages.forEach { (key, message) ->
+                    if (!seenMessageKeys.add(key)) return@forEach
+                    if (!shouldNotifyIncoming(message, currentUserUid)) return@forEach
+
+                    val sender = _uiState.value.users
+                        .find { it.firebaseUid == message.senderUid }
+
+                    val senderUserId: Int = sender?.userId ?: 0
+
+                    // Skip notification if the chat with this sender is currently open
+                    if (senderUserId != 0 && activeChatUserId == senderUserId) return@forEach
+
+                    val senderName = sender
+                        ?.username
+                        ?: "Nuevo mensaje"
+
+                    val preview = when {
+                        !message.text.isNullOrBlank() -> message.text
+                        !message.imageUrl.isNullOrBlank() -> "Te ha enviado una foto"
+                        else -> "Tienes un nuevo mensaje"
+                    }
+
+                    appContext?.let { context ->
+                        ChatNotificationHelper.showIncomingMessage(
+                            context = context,
+                            senderName = senderName,
+                            senderUserId = senderUserId,
+                            messagePreview = preview
+                        )
+                    }
                 }
             }
 
@@ -80,6 +162,15 @@ class UsersViewModel: ViewModel() {
         }
 
         ref.addValueEventListener(messagesListener as ValueEventListener)
+    }
+
+    private fun shouldNotifyIncoming(message: Message, currentUserUid: String): Boolean {
+        if (currentUserUid.isBlank()) return false
+        return message.receiverUid == currentUserUid && message.senderUid != currentUserUid
+    }
+
+    private fun buildFallbackMessageKey(message: Message): String {
+        return "${message.senderUid}_${message.receiverUid}_${message.timestamp}_${message.text}_${message.imageUrl}"
     }
 
     fun sendMessage(receiverUid: String, text: String) {
@@ -125,31 +216,13 @@ class UsersViewModel: ViewModel() {
             db.reference.child("messages").removeEventListener(listener)
         }
         messagesListener = null
+        didBootstrapMessages = false
+        seenMessageKeys.clear()
         super.onCleared()
     }
 
     fun logout() {
         Firebase.auth.signOut()
-    }
-
-    fun blockUser(userId: Int) {
-        _uiState.update { state ->
-            state.copy(
-                users = state.users.map { user ->
-                    if (user.userId == userId) user.copy(isBlocked = true) else user
-                }
-            )
-        }
-    }
-
-    fun unblockUser(userId: Int) {
-        _uiState.update { state ->
-            state.copy(
-                users = state.users.map { user ->
-                    if (user.userId == userId) user.copy(isBlocked = false) else user
-                }
-            )
-        }
     }
 
     fun onImageSelected(receiverUid: String, uri: Uri) {

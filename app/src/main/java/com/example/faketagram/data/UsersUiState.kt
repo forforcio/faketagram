@@ -52,7 +52,7 @@ data class UsersUiState(
                 age = 0,
                 distance = 0.0,
                 bio = "this user does not exist",
-                resName = "wenaso_1",
+                resName = "default_user",
             )
         }
         return user

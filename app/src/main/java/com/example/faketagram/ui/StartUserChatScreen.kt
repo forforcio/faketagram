@@ -52,6 +52,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -70,6 +71,8 @@ fun StartUserChatScreen(
     modifier: Modifier,
     onSendMessage: (String) -> Unit,
     onSendPhoto: (Uri) -> Unit,
+    onChatOpened: (Int) -> Unit = {},
+    onChatClosed: () -> Unit = {},
 ) {
     val context = LocalContext.current
     val user: User = uiState.getUserById(userId)
@@ -78,6 +81,12 @@ fun StartUserChatScreen(
     )
     var textToSend by rememberSaveable { mutableStateOf("") }
     var cameraTempUri by remember { mutableStateOf<Uri?>(null) }
+
+    // Tell ViewModel this chat is open so incoming messages are not notified
+    DisposableEffect(userId) {
+        onChatOpened(userId)
+        onDispose { onChatClosed() }
+    }
 
     val pickPhotoLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
