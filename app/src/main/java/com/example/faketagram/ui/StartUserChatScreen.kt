@@ -27,8 +27,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.ArrowCircleRight
 import androidx.compose.material.icons.filled.CameraAlt
@@ -51,14 +49,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import coil.compose.AsyncImage
+import com.example.faketagram.R
 import com.example.faketagram.data.UsersUiState
 import com.example.faketagram.data.model.Message
 import com.example.faketagram.data.model.User
@@ -75,9 +73,10 @@ fun StartUserChatScreen(
     onChatClosed: () -> Unit = {},
 ) {
     val context = LocalContext.current
-    val user: User = uiState.getUserById(userId)
+    val user: User = uiState.getUserById(userId, context)
     val messages = uiState.getIncomingMessagesForCurrentUser(
-        senderId = user.firebaseUid
+        senderId = user.firebaseUid,
+        context = context
     )
     var textToSend by rememberSaveable { mutableStateOf("") }
     var cameraTempUri by remember { mutableStateOf<Uri?>(null) }
@@ -121,12 +120,12 @@ fun StartUserChatScreen(
                         verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             imageVector = Icons.Default.ArrowBackIosNew,
-                            contentDescription = "back icon",
+                            contentDescription = stringResource(R.string.chat_back_icon),
                             tint = Color.White
                         )
                         Image(
                             painter = painterResource(user.resId),
-                            contentDescription = "User photo",
+                            contentDescription = stringResource(R.string.content_desc_user_photo),
                             modifier = Modifier
                                 .padding(horizontal = 10.dp)
                                 .clip(CircleShape)
@@ -142,7 +141,7 @@ fun StartUserChatScreen(
                                 textAlign = androidx.compose.ui.text.style.TextAlign.Start
                             )
                             Text(
-                                text = "A 2.3 km de ti",
+                                text = stringResource(R.string.chat_distance_from_you, user.distance),
                                 modifier = Modifier,
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = Color.White,
@@ -163,7 +162,7 @@ fun StartUserChatScreen(
                         .padding(horizontal = 10.dp)
                 ) {
                     Text(
-                        text = "\uD83D\uDD0D\uFE0E Buscar",
+                        text = stringResource(R.string.common_search),
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.Gray,
                         modifier = Modifier
@@ -196,7 +195,7 @@ fun StartUserChatScreen(
                             .weight(1f)
                             .fillMaxWidth()
                             .padding(start = 8.dp),
-                        placeholder = { Text("Escribe algo...") },
+                        placeholder = { Text(stringResource(R.string.chat_input_placeholder)) },
                         singleLine = true,
                         colors = TextFieldDefaults.colors(
                             focusedContainerColor = MaterialTheme.colorScheme.surface,
@@ -208,7 +207,7 @@ fun StartUserChatScreen(
                     Icon(
                         imageVector = Icons.Default.ArrowCircleRight,
                         tint = MaterialTheme.colorScheme.tertiary,
-                        contentDescription = "Send icon",
+                        contentDescription = stringResource(R.string.chat_send_icon),
                         modifier = Modifier
                             .padding(horizontal = 8.dp)
                             .clickable(
@@ -224,7 +223,7 @@ fun StartUserChatScreen(
                     Icon(
                         imageVector = Icons.Default.CameraAlt,
                         tint = MaterialTheme.colorScheme.tertiary,
-                        contentDescription = "Take photo icon",
+                        contentDescription = stringResource(R.string.chat_take_photo_icon),
                         modifier = Modifier
                             .padding(horizontal = 8.dp)
                             .clickable(
@@ -238,7 +237,7 @@ fun StartUserChatScreen(
                     Icon(
                         imageVector = Icons.Default.Image,
                         tint = MaterialTheme.colorScheme.tertiary,
-                        contentDescription = "Gallery search icon",
+                        contentDescription = stringResource(R.string.chat_gallery_search_icon),
                         modifier = Modifier
                             .padding(horizontal = 8.dp)
                             .clickable(
@@ -262,7 +261,7 @@ fun StartUserChatScreen(
             reverseLayout = true
         ) {
             items(messages) { message ->
-                val sender: User = uiState.getUserByFirebaseUid(message.senderUid ?: "")
+                val sender: User = uiState.getUserByFirebaseUid(message.senderUid ?: "", context)
                 MessageDisplay(
                     user = sender,
                     message = message,
@@ -298,7 +297,7 @@ fun MessageDisplay(
         if (isReceived) {
             Image(
                 painter = painterResource(user.resId),
-                contentDescription = "User photo",
+                contentDescription = stringResource(R.string.content_desc_user_photo),
                 modifier = Modifier
                     .clip(CircleShape)
                     .requiredSize(50.dp),
@@ -329,7 +328,7 @@ fun MessageDisplay(
             }
             Image(
                 painter = painterResource(user.resId),
-                contentDescription = "User photo",
+                contentDescription = stringResource(R.string.content_desc_user_photo),
                 modifier = Modifier
                     .clip(CircleShape)
                     .requiredSize(50.dp),
@@ -352,7 +351,7 @@ private fun MessageBubble(
         if (!message.imageUrl.isNullOrBlank()) {
             AsyncImage(
                 model = message.imageUrl,
-                contentDescription = "Photo message",
+                contentDescription = stringResource(R.string.chat_photo_message),
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(1f)

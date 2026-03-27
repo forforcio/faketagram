@@ -8,12 +8,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import kotlinx.serialization.Serializable
 
 enum class Screen(
-    val label: String,
     val icon: ImageVector,
 ) {
-    HOME("Home", Icons.Default.Home),
-    CHAT("Chat", Icons.Default.ChatBubbleOutline),
-    PROFILE("Profile", Icons.Default.AccountCircle)
+    HOME(Icons.Default.Home),
+    CHAT(Icons.Default.ChatBubbleOutline),
+    PROFILE(Icons.Default.AccountCircle)
 }
 
 @Serializable

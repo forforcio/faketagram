@@ -66,7 +66,7 @@ class SignInActivity : ComponentActivity() {
         } else {
             Toast.makeText(
                 this,
-                "There was an error signing in",
+                getString(R.string.signin_error_signing_in),
                 Toast.LENGTH_LONG).show()
 
             val response = result.idpResponse

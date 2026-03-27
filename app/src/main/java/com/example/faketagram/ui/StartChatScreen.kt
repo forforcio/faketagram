@@ -31,6 +31,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -63,7 +64,7 @@ fun StartChatScreen(
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.meelt_logo),
-                        contentDescription = "App logo",
+                        contentDescription = stringResource(R.string.content_desc_app_logo),
                         modifier = Modifier
                             .fillMaxSize()
                             .align(Alignment.BottomCenter),
@@ -74,7 +75,7 @@ fun StartChatScreen(
                         Image(
                             painter = painterResource(uiState.getCurrentUserProfilePicture()
                                 ?: R.drawable.default_user),
-                            contentDescription = "User photo",
+                            contentDescription = stringResource(R.string.content_desc_user_photo),
                             modifier = Modifier
                                 .clip(CircleShape)
                                 .requiredSize(28.dp)
@@ -86,7 +87,8 @@ fun StartChatScreen(
                             contentScale = ContentScale.Crop
                         )
                         Text(
-                            text = uiState.getAuthenticatedUser()?.username ?: "usuario no encontrado",
+                            text = uiState.getAuthenticatedUser()?.username
+                                ?: stringResource(R.string.chat_user_not_found),
                             style = MaterialTheme.typography.titleMedium.copy(
                                 fontWeight = FontWeight.ExtraBold,
                                 color = Color.Black
@@ -109,7 +111,7 @@ fun StartChatScreen(
                         .padding(10.dp)
                 ) {
                     Text(
-                        text = "\uD83D\uDD0D\uFE0E Buscar",
+                        text = stringResource(R.string.common_search),
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.Gray,
                         modifier = Modifier
@@ -117,7 +119,7 @@ fun StartChatScreen(
                     )
                 }
                 Text (
-                    text = "Mensajes",
+                    text = stringResource(R.string.chat_title_messages),
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontWeight = FontWeight.ExtraBold,
                         color = Color.Black
@@ -171,7 +173,7 @@ fun ChatView(
         ) {
             Image(
                 painter = painterResource(user.resId),
-                contentDescription = "User photo",
+                contentDescription = stringResource(R.string.content_desc_user_photo),
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
                     .size(50.dp)
@@ -193,7 +195,7 @@ fun ChatView(
                         modifier = Modifier.padding(bottom = 6.dp)
                     )
                     Text(
-                        text = "Ultimo mensaje leído (no implementado)",
+                        text = stringResource(R.string.chat_last_message_placeholder),
                         style = MaterialTheme.typography.bodySmall.copy(
                             color = Color.Black
                         ),

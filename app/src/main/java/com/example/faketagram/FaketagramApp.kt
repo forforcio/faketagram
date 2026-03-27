@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -127,7 +128,7 @@ fun FaketagramApp(
             }
             composable<UserProfileRoute> { backStackEntry ->
                 val profileRoute: UserProfileRoute = backStackEntry.toRoute()
-                val selectedUser = uiState.getUserById(profileRoute.userId)
+                val selectedUser = uiState.getUserById(profileRoute.userId, context)
 
                 if (uiState.isUserBlocked(selectedUser.userId)) {
                     StartBlockedUserScreen(
@@ -148,7 +149,7 @@ fun FaketagramApp(
             }
             composable<UserChatRoute> { backStackEntry ->
                 val chatRoute: UserChatRoute = backStackEntry.toRoute()
-                val userChat = uiState.getUserById(chatRoute.userId)
+                val userChat = uiState.getUserById(chatRoute.userId, context)
 
                 if (uiState.isUserBlocked(userChat.userId)) {
                     StartBlockedUserScreen(
@@ -240,7 +241,7 @@ private fun EditableBottomBar(
                     if (screen == Screen.PROFILE) {
                         Image(
                             painter = painterResource(profileImageRes),
-                            contentDescription = "User photo",
+                            contentDescription = stringResource(R.string.content_desc_user_photo),
                             modifier = Modifier
                                 .clip(CircleShape)
                                 .requiredSize(28.dp)
@@ -254,7 +255,11 @@ private fun EditableBottomBar(
                     } else {
                         Icon(
                             imageVector = screen.icon,
-                            contentDescription = screen.label,
+                            contentDescription = when (screen) {
+                                Screen.HOME -> stringResource(R.string.nav_home)
+                                Screen.CHAT -> stringResource(R.string.nav_chat)
+                                Screen.PROFILE -> stringResource(R.string.nav_profile)
+                            },
                             tint = MaterialTheme.colorScheme.secondary
                         )
                     }

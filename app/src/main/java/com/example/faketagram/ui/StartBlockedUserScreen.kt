@@ -1,7 +1,6 @@
 package com.example.faketagram.ui
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,10 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Block
 import androidx.compose.material.icons.rounded.LockOpen
@@ -34,10 +30,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.faketagram.R
 import com.example.faketagram.data.model.User
 
@@ -58,7 +54,7 @@ fun StartBlockedUserScreen(
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.meelt_logo),
-                    contentDescription = "App logo",
+                    contentDescription = stringResource(R.string.content_desc_app_logo),
                     modifier = Modifier
                         .fillMaxSize()
                         .align(Alignment.BottomCenter),
@@ -77,7 +73,7 @@ fun StartBlockedUserScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "Has bloqueado a",
+                text = stringResource(R.string.blocked_title),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                 textAlign = TextAlign.Center
@@ -106,7 +102,7 @@ fun StartBlockedUserScreen(
             ) {
                 Image(
                     painter = painterResource(photoRes),
-                    contentDescription = "Foto de ${user.username}",
+                    contentDescription = stringResource(R.string.content_desc_photo_of_user, user.username),
                     modifier = Modifier
                         .fillMaxWidth(0.90f)
                         .aspectRatio(1f)
@@ -121,21 +117,21 @@ fun StartBlockedUserScreen(
             ) {
                 BlockedActionItem(
                     icon = Icons.Rounded.Block,
-                    label = "Esta cuenta no podrá enviarte mensajer ni entrar en tu perfil",
+                    label = stringResource(R.string.blocked_action_block_desc),
                     tint = MaterialTheme.colorScheme.tertiary,
                     onClick = {},
                     0.34f
                 )
                 BlockedActionItem(
                     icon = Icons.Rounded.ReportProblem,
-                    label = "Puedes denunciar esta cuenta si crees que infringe las normas de la comunidad",
+                    label = stringResource(R.string.blocked_action_report_desc),
                     tint = MaterialTheme.colorScheme.tertiary,
                     onClick = {},
                     0.5f
                 )
                 BlockedActionItem(
                     icon = Icons.Rounded.LockOpen,
-                    label = "Desbloquear usuario",
+                    label = stringResource(R.string.blocked_action_unblock),
                     tint = MaterialTheme.colorScheme.tertiary,
                     onClick = { onUnblock(user) },
                     1f

@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import com.example.faketagram.BuildConfig
+import com.example.faketagram.R
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.faketagram.data.UsersUiState
@@ -135,13 +136,14 @@ class UsersViewModel: ViewModel() {
 
                     val senderName = sender
                         ?.username
+                        ?: appContext?.getString(R.string.notification_sender_fallback)
                         ?: "Nuevo mensaje"
 
                     val preview = when {
                         !message.text.isNullOrBlank() -> message.text
-                        !message.imageUrl.isNullOrBlank() -> "Te ha enviado una foto"
-                        else -> "Tienes un nuevo mensaje"
-                    }
+                        !message.imageUrl.isNullOrBlank() -> appContext?.getString(R.string.notification_photo_preview)
+                        else -> appContext?.getString(R.string.notification_new_message_preview)
+                    } ?: "Tienes un nuevo mensaje"
 
                     appContext?.let { context ->
                         ChatNotificationHelper.showIncomingMessage(
@@ -186,7 +188,12 @@ class UsersViewModel: ViewModel() {
 
         if (senderUid.isBlank() || receiverUid.isBlank()) {
             Log.e("UsersViewModel", "  ERROR: senderUid or receiverUid is blank")
-            _uiState.update { it.copy(error = "Unable to resolve sender or receiver") }
+            _uiState.update {
+                it.copy(
+                    error = appContext?.getString(R.string.chat_error_sender_receiver_unresolved)
+                        ?: "Unable to resolve sender or receiver"
+                )
+            }
             return
         }
 
@@ -206,7 +213,14 @@ class UsersViewModel: ViewModel() {
             }
             .addOnFailureListener { exception ->
                 Log.e("UsersViewModel", "  FAILURE writing to Firebase: ${exception.message}", exception)
-                _uiState.update { it.copy(error = "Error al enviar: ${exception.message}") }
+                _uiState.update {
+                    it.copy(
+                        error = appContext?.getString(
+                            R.string.chat_error_send_message,
+                            exception.message.orEmpty()
+                        ) ?: "Error al enviar: ${exception.message}"
+                    )
+                }
             }
     }
 
