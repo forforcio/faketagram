@@ -175,7 +175,8 @@ fun FaketagramApp(
                             )
                         },
                         onChatOpened = { viewModel.setActiveChatUserId(it) },
-                        onChatClosed = { viewModel.clearActiveChatUserId() }
+                        onChatClosed = { viewModel.clearActiveChatUserId() },
+                        deleteMessage = { viewModel.deleteMessage(it) }
                     )
                 }
             }
