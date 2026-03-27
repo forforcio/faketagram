@@ -8,6 +8,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -71,6 +72,7 @@ fun StartUserChatScreen(
     onSendPhoto: (Uri) -> Unit,
     onChatOpened: (Int) -> Unit = {},
     onChatClosed: () -> Unit = {},
+    deleteMessage: (Message) -> Unit = {}
 ) {
     val context = LocalContext.current
     val user: User = uiState.getUserById(userId, context)
@@ -265,7 +267,8 @@ fun StartUserChatScreen(
                 MessageDisplay(
                     user = sender,
                     message = message,
-                    isReceived = sender == user
+                    isReceived = sender == user,
+                    deleteMessage = { deleteMessage(message) }
                 )
             }
         }
@@ -286,7 +289,8 @@ private fun createTempImageUri(context: Context): Uri {
 fun MessageDisplay(
     user: User,
     message: Message,
-    isReceived: Boolean
+    isReceived: Boolean,
+    deleteMessage: (Message) -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -311,7 +315,8 @@ fun MessageDisplay(
                     message = message,
                     modifier = Modifier,
                     color = MaterialTheme.colorScheme.tertiary,
-                    fontColor = Color.White
+                    fontColor = Color.White,
+                    deleteMessage = deleteMessage
                 )
             }
         } else {
@@ -323,7 +328,8 @@ fun MessageDisplay(
                     message = message,
                     modifier = Modifier,
                     color = MaterialTheme.colorScheme.surface,
-                    fontColor = Color.Black
+                    fontColor = Color.Black,
+                    deleteMessage = deleteMessage
                 )
             }
             Image(
@@ -343,10 +349,14 @@ private fun MessageBubble(
     message: Message,
     modifier: Modifier = Modifier,
     color: Color,
-    fontColor: Color
+    fontColor: Color,
+    deleteMessage: (Message) -> Unit
 ) {
     BoxWithConstraints(
-        modifier = modifier.padding(vertical = 4.dp)
+        modifier = modifier.padding(vertical = 4.dp).combinedClickable(
+            onClick = {},
+            onLongClick = { deleteMessage(message) },
+        )
     ) {
         if (!message.imageUrl.isNullOrBlank()) {
             AsyncImage(

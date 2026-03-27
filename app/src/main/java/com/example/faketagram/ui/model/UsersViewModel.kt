@@ -224,6 +224,63 @@ class UsersViewModel: ViewModel() {
             }
     }
 
+    fun deleteMessage(message: Message) {
+        val targetTimestamp = message.timestamp.toDouble()
+
+        db.reference
+            .child(MESSAGES_CHILD)
+            .orderByChild("timestamp")
+            .equalTo(targetTimestamp)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (!snapshot.exists()) {
+                        Log.w(TAG, "No message found to delete for timestamp=${message.timestamp}")
+                        return
+                    }
+
+                    var deletedCount = 0
+                    snapshot.children.forEach { child ->
+                        val candidate = child.getValue(Message::class.java) ?: return@forEach
+                        val isSameMessage =
+                            candidate.senderUid == message.senderUid &&
+                                    candidate.receiverUid == message.receiverUid &&
+                                    candidate.text == message.text &&
+                                    candidate.imageUrl == message.imageUrl &&
+                                    candidate.photoUrl == message.photoUrl &&
+                                    candidate.timestamp == message.timestamp
+
+                        if (isSameMessage) {
+                            child.ref.removeValue()
+                                .addOnSuccessListener {
+                                    Log.d(TAG, "Message deleted successfully: key=${child.key}")
+                                }
+                                .addOnFailureListener { e ->
+                                    Log.w(TAG, "Unable to delete message key=${child.key}", e)
+                                    _uiState.update {
+                                        it.copy(
+                                            error = appContext?.getString(
+                                                R.string.chat_error_send_message,
+                                                e.message.orEmpty()
+                                            ) ?: "Error deleting message: ${e.message}"
+                                        )
+                                    }
+                                }
+                            deletedCount++
+                        }
+                    }
+
+                    if (deletedCount == 0) {
+                        Log.w(TAG, "No exact matching message found for deletion")
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Log.w(TAG, "Message delete query cancelled", error.toException())
+                    _uiState.update { it.copy(error = error.message) }
+                }
+            })
+    }
+
     override fun onCleared() {
         val listener = messagesListener
         if (listener != null) {

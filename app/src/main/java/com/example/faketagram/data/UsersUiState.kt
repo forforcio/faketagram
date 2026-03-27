@@ -78,14 +78,14 @@ data class UsersUiState(
                         ?: "Que casualidad, yo tambien soy un mensaje de prueba!",
                     senderUid = authenticatedUserUid,
                     receiverUid = otherUid,
-                    timestamp = System.currentTimeMillis()
+                    timestamp = System.currentTimeMillis(),
                 ),
                 Message(
                     text = context?.getString(R.string.fallback_message_demo_2)
                         ?: "Hola soy un mensaje de prueba",
                     senderUid = otherUid,
                     receiverUid = authenticatedUserUid,
-                    timestamp = System.currentTimeMillis()
+                    timestamp = System.currentTimeMillis(),
                 )
             )
             return defaultList
