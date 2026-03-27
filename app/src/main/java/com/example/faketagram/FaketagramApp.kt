@@ -51,7 +51,9 @@ import com.example.faketagram.ui.nav.UserProfileRoute
 @Composable
 fun FaketagramApp(
     viewModel: UsersViewModel = viewModel(),
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
+    initialChatUserId: Int? = null,
+    onInitialChatConsumed: () -> Unit = {},
 ) {
     val context = LocalContext.current
     val dataService = remember { DataManagementService() }
@@ -80,9 +82,18 @@ fun FaketagramApp(
         context(resourcesService) {
             dataService.getUsersFromJson(R.raw.users)
         }
-        context(dataService) {
+        context(dataService, context.applicationContext) {
             viewModel.init()
         }
+    }
+
+    // Navigate to chat when app is opened from a notification
+    LaunchedEffect(initialChatUserId) {
+        val userId = initialChatUserId ?: return@LaunchedEffect
+        navController.navigate(UserChatRoute(userId)) {
+            launchSingleTop = true
+        }
+        onInitialChatConsumed()
     }
 
     val appContent: @Composable (Modifier) -> Unit = { modifier ->
@@ -161,7 +172,9 @@ fun FaketagramApp(
                                 receiverUid = userChat.firebaseUid,
                                 uri = uri
                             )
-                        }
+                        },
+                        onChatOpened = { viewModel.setActiveChatUserId(it) },
+                        onChatClosed = { viewModel.clearActiveChatUserId() }
                     )
                 }
             }
