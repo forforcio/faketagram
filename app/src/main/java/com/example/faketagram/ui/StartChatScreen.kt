@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,19 +25,25 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.modifier.modifierLocalConsumer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.faketagram.R
 import com.example.faketagram.data.UsersUiState
+import com.example.faketagram.data.model.Chat
 import com.example.faketagram.data.model.User
 
 @Composable
@@ -45,11 +52,14 @@ fun StartChatScreen(
     onUserClick: (User) -> Unit,
     modifier: Modifier
 ) {
-    val users: List<User> = uiState.getUsersExceptCurrent()
+    val chats: List<Chat> = remember(uiState) {
+        uiState.getChatsOrdered()
+    }
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
-            Column (
+            Column(
                 modifier = Modifier.padding(horizontal = 15.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
@@ -73,8 +83,10 @@ fun StartChatScreen(
                 Box {
                     Row {
                         Image(
-                            painter = painterResource(uiState.getCurrentUserProfilePicture()
-                                ?: R.drawable.default_user),
+                            painter = painterResource(
+                                uiState.getCurrentUserProfilePicture()
+                                    ?: R.drawable.default_user
+                            ),
                             contentDescription = stringResource(R.string.content_desc_user_photo),
                             modifier = Modifier
                                 .clip(CircleShape)
@@ -118,7 +130,7 @@ fun StartChatScreen(
                             .align(Alignment.CenterStart),
                     )
                 }
-                Text (
+                Text(
                     text = stringResource(R.string.chat_title_messages),
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontWeight = FontWeight.ExtraBold,
@@ -139,12 +151,14 @@ fun StartChatScreen(
             verticalArrangement = Arrangement.spacedBy(5.dp),
             contentPadding = PaddingValues(0.dp),
         ) {
-            items(users) { user ->
+            items(chats) { chat ->
                 ChatView(
-                    user,
+                    chat.interlocutor,
                     onClick = {
-                        onUserClick(user)
-                    }
+                        onUserClick(chat.interlocutor)
+                    },
+                    lastMessage = chat.getLastMessage()?.text?: stringResource(R.string.chat_no_messages_yet),
+                    messagesUnread = chat.getPendingMessagesCount()
                 )
             }
         }
@@ -155,6 +169,8 @@ fun StartChatScreen(
 fun ChatView(
     user: User,
     onClick: () -> Unit,
+    lastMessage: String,
+    messagesUnread: Int
 ) {
     Box(
         modifier = Modifier
@@ -169,22 +185,23 @@ fun ChatView(
             ) { onClick() },
     ) {
         Row(
-            modifier = Modifier
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Image(
-                painter = painterResource(user.resId),
-                contentDescription = stringResource(R.string.content_desc_user_photo),
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
-                    .size(50.dp)
-                    .clip(CircleShape)
-                    .fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
-            Box {
-                Column(modifier = Modifier
-                    .padding(horizontal = 15.dp, vertical = 8.dp)
-                    .fillMaxSize()
+            Row {
+                Image(
+                    painter = painterResource(user.resId),
+                    contentDescription = stringResource(R.string.content_desc_user_photo),
+                    modifier = Modifier
+                        .size(50.dp)
+                        .clip(CircleShape)
+                        .fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+                Column(
+                    modifier = Modifier
+                        .padding(horizontal = 15.dp, vertical = 8.dp)
                 ) {
                     Text(
                         text = user.username,
@@ -192,15 +209,38 @@ fun ChatView(
                             fontWeight = FontWeight.ExtraBold,
                             color = Color.Black
                         ),
+                        fontSize = 17.sp,
                         modifier = Modifier.padding(bottom = 6.dp)
                     )
                     Text(
-                        text = stringResource(R.string.chat_last_message_placeholder),
+                        text = lastMessage,
                         style = MaterialTheme.typography.bodySmall.copy(
-                            color = Color.Black
+                            color = Color.Black,
+                            fontWeight = if (messagesUnread > 0) {
+                                FontWeight.ExtraBold
+                            } else FontWeight.Normal,
+                            fontSize = 14.sp
                         ),
-                        overflow= TextOverflow.Ellipsis,
+                        overflow = TextOverflow.Ellipsis,
                         maxLines = 1
+                    )
+                }
+            }
+            Box {
+                if (messagesUnread > 0) {
+                    Text(
+                        text = messagesUnread.toString(),
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Bold
+                        ),
+                        modifier = Modifier
+                            .padding(horizontal = 10.dp)
+                            .background(
+                                color = MaterialTheme.colorScheme.secondary,
+                                shape = CircleShape
+                            )
+                            .padding(horizontal = 6.dp, vertical = 2.dp)
                     )
                 }
             }

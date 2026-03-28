@@ -59,6 +59,7 @@ import androidx.core.content.FileProvider
 import coil.compose.AsyncImage
 import com.example.faketagram.R
 import com.example.faketagram.data.UsersUiState
+import com.example.faketagram.data.model.Chat
 import com.example.faketagram.data.model.Message
 import com.example.faketagram.data.model.User
 import java.io.File
@@ -66,7 +67,7 @@ import java.io.File
 @Composable
 fun StartUserChatScreen(
     uiState: UsersUiState,
-    userId: Int,
+    chat: Chat,
     modifier: Modifier,
     onSendMessage: (String) -> Unit,
     onSendPhoto: (Uri) -> Unit,
@@ -75,17 +76,11 @@ fun StartUserChatScreen(
     deleteMessage: (Message) -> Unit = {}
 ) {
     val context = LocalContext.current
-    val user: User = uiState.getUserById(userId, context)
-    val messages = uiState.getIncomingMessagesForCurrentUser(
-        senderId = user.firebaseUid,
-        context = context
-    )
     var textToSend by rememberSaveable { mutableStateOf("") }
     var cameraTempUri by remember { mutableStateOf<Uri?>(null) }
 
-    // Tell ViewModel this chat is open so incoming messages are not notified
-    DisposableEffect(userId) {
-        onChatOpened(userId)
+    DisposableEffect(chat.interlocutor.userId) {
+        onChatOpened(chat.interlocutor.userId)
         onDispose { onChatClosed() }
     }
 
@@ -126,7 +121,7 @@ fun StartUserChatScreen(
                             tint = Color.White
                         )
                         Image(
-                            painter = painterResource(user.resId),
+                            painter = painterResource(chat.interlocutor.resId),
                             contentDescription = stringResource(R.string.content_desc_user_photo),
                             modifier = Modifier
                                 .padding(horizontal = 10.dp)
@@ -136,14 +131,14 @@ fun StartUserChatScreen(
                         )
                         Column() {
                             Text(
-                                text = user.username,
+                                text = chat.interlocutor.username,
                                 modifier = Modifier,
                                 style = MaterialTheme.typography.headlineSmall,
                                 color = Color.White,
                                 textAlign = androidx.compose.ui.text.style.TextAlign.Start
                             )
                             Text(
-                                text = stringResource(R.string.chat_distance_from_you, user.distance),
+                                text = stringResource(R.string.chat_distance_from_you, chat.interlocutor.distance),
                                 modifier = Modifier,
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = Color.White,
@@ -262,12 +257,12 @@ fun StartUserChatScreen(
             verticalArrangement = Arrangement.spacedBy(3.dp),
             reverseLayout = true
         ) {
-            items(messages) { message ->
+            items(chat.getMessagesReverseChronological()) { message ->
                 val sender: User = uiState.getUserByFirebaseUid(message.senderUid ?: "", context)
                 MessageDisplay(
                     user = sender,
                     message = message,
-                    isReceived = sender == user,
+                    isReceived = sender == chat.interlocutor,
                     deleteMessage = { deleteMessage(message) }
                 )
             }

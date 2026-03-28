@@ -35,6 +35,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.example.faketagram.data.model.Chat
 import com.example.faketagram.data.service.DataManagementService
 import com.example.faketagram.data.service.ResourcesService
 import com.example.faketagram.ui.StartBlockedUserScreen
@@ -128,7 +129,7 @@ fun FaketagramApp(
             }
             composable<UserProfileRoute> { backStackEntry ->
                 val profileRoute: UserProfileRoute = backStackEntry.toRoute()
-                val selectedUser = uiState.getUserById(profileRoute.userId, context)
+                val selectedUser = uiState.getUserById(profileRoute.userId)
 
                 if (uiState.isUserBlocked(selectedUser.userId)) {
                     StartBlockedUserScreen(
@@ -149,32 +150,35 @@ fun FaketagramApp(
             }
             composable<UserChatRoute> { backStackEntry ->
                 val chatRoute: UserChatRoute = backStackEntry.toRoute()
-                val userChat = uiState.getUserById(chatRoute.userId, context)
+                val userChat: Chat = uiState.getChatByUserId(chatRoute.userId)
 
-                if (uiState.isUserBlocked(userChat.userId)) {
+                if (uiState.isUserBlocked(userChat.interlocutor.userId)) {
                     StartBlockedUserScreen(
-                        user = userChat,
+                        user = userChat.interlocutor,
                         modifier = Modifier.fillMaxSize(),
                         onUnblock = { viewModel.unblockUser(it.userId) }
                     )
                 } else {
                     StartUserChatScreen(
                         uiState = uiState,
-                        userId = userChat.userId,
+                        chat = userChat,
                         modifier = Modifier,
                         onSendMessage = { text ->
                             viewModel.sendMessage(
-                                receiverUid = userChat.firebaseUid,
+                                receiverUid = userChat.interlocutor.firebaseUid,
                                 text = text,
                             )
                         },
                         onSendPhoto = { uri ->
                             viewModel.onImageSelected(
-                                receiverUid = userChat.firebaseUid,
+                                receiverUid = userChat.interlocutor.firebaseUid,
                                 uri = uri
                             )
                         },
-                        onChatOpened = { viewModel.setActiveChatUserId(it) },
+                        onChatOpened = {
+                            viewModel.setActiveChatUserId(it)
+                            viewModel.setAllMessagesAsReadByUser(it)
+                                       },
                         onChatClosed = { viewModel.clearActiveChatUserId() },
                         deleteMessage = { viewModel.deleteMessage(it) }
                     )

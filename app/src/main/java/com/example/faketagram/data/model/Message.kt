@@ -7,4 +7,5 @@ data class Message(
     val senderUid: String? = null,
     val receiverUid: String? = null,
     val timestamp: Long = 0L,
+    val read: Boolean = false,
 )

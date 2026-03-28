@@ -353,6 +353,28 @@ class UsersViewModel: ViewModel() {
             }
     }
 
+    fun setAllMessagesAsReadByUser(senderId: Int) {
+        val receiverUid = _uiState.value.authenticatedUserUid
+        val senderUid = _uiState.value.users.find { it.userId == senderId }?.firebaseUid ?: return
+        db.reference
+            .child(MESSAGES_CHILD)
+            .orderByChild("timestamp")
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    snapshot.children.forEach { child ->
+                        val message = child.getValue(Message::class.java) ?: return@forEach
+                        if (message.senderUid == senderUid && message.receiverUid == receiverUid && !message.read) {
+                            child.ref.child("read").setValue(true)
+                        }
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Log.w(TAG, "Mark as read query cancelled", error.toException())
+                }
+            })
+    }
+
     companion object {
         private const val TAG = "MainActivity"
         const val MESSAGES_CHILD = "messages"
