@@ -27,7 +27,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class UsersViewModel: ViewModel() {
+class UsersViewModel : ViewModel() {
 
     private val db: FirebaseDatabase by lazy {
         Firebase.database.apply {
@@ -46,33 +46,71 @@ class UsersViewModel: ViewModel() {
     private var didBootstrapMessages = false
     private val seenMessageKeys = mutableSetOf<String>()
 
-    // Tracks which user's chat is currently open so we skip notifications for it
     @Volatile
     private var activeChatUserId: Int? = null
 
-    fun setActiveChatUserId(userId: Int) { activeChatUserId = userId }
-    fun clearActiveChatUserId() { activeChatUserId = null }
-
-    context(dataService: DataManagementService, context: Context)
-    fun init() {
+    context(dataService: DataManagementService, resources: com.example.faketagram.data.service.ResourcesService, context: Context)
+    fun loadUiStateContents() {
         appContext = context.applicationContext
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
 
+            val selectedUsersJsonName = dataService.loadSelectedUsersFromPreferences(context)
             val users = dataService.getAllUsers()
+            val preloadedMessages = dataService.getAllMessages()
             val currentUserUid = Firebase.auth.currentUser?.uid.orEmpty()
+            val availableUsersJsonNames = dataService.getAvailableUsersJsonNames()
 
             _uiState.update {
                 it.copy(
                     users = users,
+                    messages = preloadedMessages,
                     authenticatedUserUid = currentUserUid,
+                    availableUsersJsonNames = availableUsersJsonNames,
+                    selectedUsersJsonName = selectedUsersJsonName,
                     isLoading = false
                 )
             }
 
-            startMessagesListener()
+            replaceDatabaseMessagesWith(preloadedMessages)
         }
+    }
+
+    context(dataService: DataManagementService, resources: com.example.faketagram.data.service.ResourcesService, context: Context)
+    fun selectUsersJson(jsonName: String) {
+        appContext = context.applicationContext
+
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, error = null) }
+
+            val selectedUsersJsonName = dataService.selectUsersJson(context, jsonName)
+            val users = dataService.getAllUsers()
+            val preloadedMessages = dataService.getAllMessages()
+            val currentUserUid = Firebase.auth.currentUser?.uid.orEmpty()
+            val availableUsersJsonNames = dataService.getAvailableUsersJsonNames()
+
+            _uiState.update {
+                it.copy(
+                    users = users,
+                    messages = preloadedMessages,
+                    authenticatedUserUid = currentUserUid,
+                    availableUsersJsonNames = availableUsersJsonNames,
+                    selectedUsersJsonName = selectedUsersJsonName,
+                    isLoading = false
+                )
+            }
+
+            replaceDatabaseMessagesWith(preloadedMessages)
+        }
+    }
+
+    fun setActiveChatUserId(userId: Int) {
+        activeChatUserId = userId
+    }
+
+    fun clearActiveChatUserId() {
+        activeChatUserId = null
     }
 
     fun blockUser(userId: Int) {
@@ -102,9 +140,10 @@ class UsersViewModel: ViewModel() {
         messagesListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val keyedMessages = snapshot.children.mapNotNull { child ->
-                    val message = child.getValue(Message::class.java) ?: return@mapNotNull null
-                    val key = child.key ?: buildFallbackMessageKey(message)
-                    key to message
+                    val rawMessage = child.getValue(Message::class.java) ?: return@mapNotNull null
+                    val resolvedId = rawMessage.messageId ?: child.key ?: buildFallbackMessageKey(rawMessage)
+                    val message = rawMessage.copy(messageId = resolvedId)
+                    resolvedId to message
                 }
 
                 val sortedMessages = keyedMessages
@@ -166,13 +205,62 @@ class UsersViewModel: ViewModel() {
         ref.addValueEventListener(messagesListener as ValueEventListener)
     }
 
+    private fun stopMessagesListener() {
+        val listener = messagesListener ?: return
+        db.reference.child(MESSAGES_CHILD).removeEventListener(listener)
+        messagesListener = null
+    }
+
+    private fun resetMessagesTracking() {
+        didBootstrapMessages = false
+        seenMessageKeys.clear()
+    }
+
+    private fun replaceDatabaseMessagesWith(messages: List<Message>) {
+        stopMessagesListener()
+        resetMessagesTracking()
+
+        val payload = messages
+            .sortedBy { it.timestamp }
+            .mapIndexed { index, message ->
+                val key = message.messageId ?: buildPreloadedMessageKey(index, message)
+                key to message.copy(messageId = key)
+            }
+            .toMap()
+
+        db.reference
+            .child(MESSAGES_CHILD)
+            .setValue(payload)
+            .addOnSuccessListener {
+                startMessagesListener()
+            }
+            .addOnFailureListener { exception ->
+                Log.e(TAG, "Unable to preload dataset messages into Firebase", exception)
+                _uiState.update {
+                    it.copy(
+                        error = appContext?.getString(
+                            R.string.chat_error_send_message,
+                            exception.message.orEmpty()
+                        ) ?: "Error al enviar: ${exception.message}"
+                    )
+                }
+                startMessagesListener()
+            }
+    }
+
     private fun shouldNotifyIncoming(message: Message, currentUserUid: String): Boolean {
         if (currentUserUid.isBlank()) return false
         return message.receiverUid == currentUserUid && message.senderUid != currentUserUid
     }
 
     private fun buildFallbackMessageKey(message: Message): String {
-        return "${message.senderUid}_${message.receiverUid}_${message.timestamp}_${message.text}_${message.imageUrl}"
+        return message.messageId
+            ?: "${message.senderUid}_${message.receiverUid}_${message.timestamp}_${message.text}_${message.imageUrl}"
+    }
+
+    private fun buildPreloadedMessageKey(index: Int, message: Message): String {
+        val timestampPart = message.timestamp.toString().ifBlank { "0" }
+        return "seed_${index}_$timestampPart"
     }
 
     fun sendMessage(receiverUid: String, text: String) {
@@ -197,14 +285,24 @@ class UsersViewModel: ViewModel() {
             return
         }
 
+        val ref = db.reference.child(MESSAGES_CHILD).push()
+        val messageKey = ref.key ?: buildFallbackMessageKey(
+            Message(
+                senderUid = senderUid,
+                receiverUid = receiverUid,
+                text = text,
+                timestamp = System.currentTimeMillis()
+            )
+        )
+
         val message = Message(
+            messageId = messageKey,
             text = text,
             senderUid = senderUid,
             receiverUid = receiverUid,
             timestamp = System.currentTimeMillis(),
         )
 
-        val ref = db.reference.child("messages").push()
         Log.d("UsersViewModel", "  Writing to path: $ref")
 
         ref.setValue(message)
@@ -212,7 +310,11 @@ class UsersViewModel: ViewModel() {
                 Log.d("UsersViewModel", "  SUCCESS: message written to Firebase")
             }
             .addOnFailureListener { exception ->
-                Log.e("UsersViewModel", "  FAILURE writing to Firebase: ${exception.message}", exception)
+                Log.e(
+                    "UsersViewModel",
+                    "  FAILURE writing to Firebase: ${exception.message}",
+                    exception
+                )
                 _uiState.update {
                     it.copy(
                         error = appContext?.getString(
@@ -225,6 +327,29 @@ class UsersViewModel: ViewModel() {
     }
 
     fun deleteMessage(message: Message) {
+        val messageId = message.messageId
+        if (!messageId.isNullOrBlank()) {
+            db.reference
+                .child(MESSAGES_CHILD)
+                .child(messageId)
+                .removeValue()
+                .addOnSuccessListener {
+                    Log.d(TAG, "Message deleted successfully by messageId=$messageId")
+                }
+                .addOnFailureListener { e ->
+                    Log.w(TAG, "Unable to delete message messageId=$messageId", e)
+                    _uiState.update {
+                        it.copy(
+                            error = appContext?.getString(
+                                R.string.chat_error_send_message,
+                                e.message.orEmpty()
+                            ) ?: "Error deleting message: ${e.message}"
+                        )
+                    }
+                }
+            return
+        }
+
         val targetTimestamp = message.timestamp.toDouble()
 
         db.reference
@@ -244,6 +369,7 @@ class UsersViewModel: ViewModel() {
                         val isSameMessage =
                             candidate.senderUid == message.senderUid &&
                                     candidate.receiverUid == message.receiverUid &&
+                                    candidate.messageId == message.messageId &&
                                     candidate.text == message.text &&
                                     candidate.imageUrl == message.imageUrl &&
                                     candidate.photoUrl == message.photoUrl &&
@@ -282,13 +408,8 @@ class UsersViewModel: ViewModel() {
     }
 
     override fun onCleared() {
-        val listener = messagesListener
-        if (listener != null) {
-            db.reference.child("messages").removeEventListener(listener)
-        }
-        messagesListener = null
-        didBootstrapMessages = false
-        seenMessageKeys.clear()
+        stopMessagesListener()
+        resetMessagesTracking()
         super.onCleared()
     }
 
@@ -299,16 +420,24 @@ class UsersViewModel: ViewModel() {
     fun onImageSelected(receiverUid: String, uri: Uri) {
         val user = Firebase.auth.currentUser
         val photoURL = user?.photoUrl?.toString()
+        val messageRef = db.reference
+            .child(MESSAGES_CHILD)
+            .push()
+        val key = messageRef.key
+        if (key.isNullOrBlank()) {
+            Log.w(TAG, "Unable to create key for image message")
+            return
+        }
+
         val tempMessage = Message(
+            messageId = key,
             photoUrl = photoURL,
             receiverUid = receiverUid,
             senderUid = user?.uid,
             imageUrl = LOADING_IMAGE_URL,
-            timestamp = System.currentTimeMillis())
-        db.reference
-            .child(MESSAGES_CHILD)
-            .push()
-            .setValue(
+            timestamp = System.currentTimeMillis()
+        )
+        messageRef.setValue(
                 tempMessage,
                 DatabaseReference.CompletionListener { databaseError, databaseReference ->
                     if (databaseError != null) {
@@ -320,7 +449,7 @@ class UsersViewModel: ViewModel() {
                     }
 
                     // Build a StorageReference and then upload the file
-                    val key = databaseReference.key
+                    val key = databaseReference.key ?: tempMessage.messageId
                     val storageReference = Firebase.storage
                         .getReference(user!!.uid)
                         .child(key!!)
@@ -329,7 +458,12 @@ class UsersViewModel: ViewModel() {
                 })
     }
 
-    private fun putImageInStorage(message: Message, storageReference: StorageReference, uri: Uri, key: String?) {
+    private fun putImageInStorage(
+        message: Message,
+        storageReference: StorageReference,
+        uri: Uri,
+        key: String?
+    ) {
         // First upload the image to Cloud Storage
         storageReference.putFile(uri)
             .addOnSuccessListener { taskSnapshot -> // After the image loads, get a public downloadUrl for the image
@@ -337,7 +471,10 @@ class UsersViewModel: ViewModel() {
                 taskSnapshot.metadata!!.reference!!.downloadUrl
                     .addOnSuccessListener { uri ->
                         val friendlyMessage =
-                            message.copy(imageUrl = uri.toString())
+                            message.copy(
+                                messageId = key,
+                                imageUrl = uri.toString()
+                            )
                         db.reference
                             .child(MESSAGES_CHILD)
                             .child(key!!)

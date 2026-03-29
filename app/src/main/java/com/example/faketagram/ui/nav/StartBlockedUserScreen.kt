@@ -1,4 +1,4 @@
-package com.example.faketagram.ui
+package com.example.faketagram.ui.nav
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border

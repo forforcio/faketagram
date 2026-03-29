@@ -1,4 +1,4 @@
-package com.example.faketagram.ui
+package com.example.faketagram.ui.nav
 
 import android.content.Context
 import android.net.Uri
@@ -33,6 +33,7 @@ import androidx.compose.material.icons.filled.ArrowCircleRight
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -54,6 +55,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import coil.compose.AsyncImage
@@ -135,14 +137,14 @@ fun StartUserChatScreen(
                                 modifier = Modifier,
                                 style = MaterialTheme.typography.headlineSmall,
                                 color = Color.White,
-                                textAlign = androidx.compose.ui.text.style.TextAlign.Start
+                                textAlign = TextAlign.Start
                             )
                             Text(
                                 text = stringResource(R.string.chat_distance_from_you, chat.interlocutor.distance),
                                 modifier = Modifier,
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = Color.White,
-                                textAlign = androidx.compose.ui.text.style.TextAlign.Start
+                                textAlign = TextAlign.Start
                             )
                         }
                     }
@@ -366,7 +368,7 @@ private fun MessageBubble(
         } else {
             Card(
                 modifier = Modifier.widthIn(max = maxWidth),
-                colors = androidx.compose.material3.CardDefaults.cardColors(color)
+                colors = CardDefaults.cardColors(color)
             ) {
                 Text(
                     text = message.text.orEmpty(),
