@@ -56,6 +56,7 @@ fun FaketagramApp(
     navController: NavHostController = rememberNavController(),
     initialChatUserId: Int? = null,
     onInitialChatConsumed: () -> Unit = {},
+    onLogoutRequested: () -> Unit = {},
 ) {
     val context = LocalContext.current
     val dataService = remember { DataManagementService() }
@@ -196,6 +197,7 @@ fun FaketagramApp(
                     },
                     onLogoutButtonClicked = {
                         viewModel.logout()
+                        onLogoutRequested()
                     },
                     modifier = Modifier
                 )

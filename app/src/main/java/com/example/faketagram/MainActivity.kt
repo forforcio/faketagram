@@ -65,7 +65,8 @@ class MainActivity : ComponentActivity() {
             FaketagramTheme {
                 FaketagramApp(
                     initialChatUserId = pendingChatUserId,
-                    onInitialChatConsumed = { pendingChatUserId = null }
+                    onInitialChatConsumed = { pendingChatUserId = null },
+                    onLogoutRequested = { navigateToSignInAndFinish() }
                 )
             }
         }
@@ -101,6 +102,14 @@ class MainActivity : ComponentActivity() {
         }
 
         ActivityCompat.requestPermissions(this, arrayOf(permission), 1001)
+    }
+
+    private fun navigateToSignInAndFinish() {
+        val intent = Intent(this, SignInActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        }
+        startActivity(intent)
+        finish()
     }
 }
 
