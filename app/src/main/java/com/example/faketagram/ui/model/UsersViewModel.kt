@@ -415,6 +415,7 @@ class UsersViewModel : ViewModel() {
 
     fun logout() {
         Firebase.auth.signOut()
+
     }
 
     fun onImageSelected(receiverUid: String, uri: Uri) {
