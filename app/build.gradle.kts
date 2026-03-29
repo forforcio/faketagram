@@ -2,11 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     kotlin("plugin.serialization") version "2.3.20"
-//    id("com.android.application") version "9.0.0" apply false
-//    id("com.android.library") version "9.0.1" apply false
-//    id("org.jetbrains.kotlin.android") version "2.3.0" apply false
     id("com.google.gms.google-services") version "4.4.4"
-//    id("com.github.ben-manes.versions") version "0.53.0" apply true
 }
 
 kotlin {
@@ -16,7 +12,7 @@ kotlin {
 }
 
 android {
-    namespace = "com.example.faketagram"
+    namespace = "com.izzo.meelt"
     compileSdk {
         version = release(36) {
             minorApiLevel = 1
@@ -24,7 +20,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.faketagram"
+        applicationId = "com.izzo.meelt"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
