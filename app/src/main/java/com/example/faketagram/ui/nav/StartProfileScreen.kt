@@ -2,6 +2,7 @@ package com.example.faketagram.ui.nav
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -11,8 +12,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -65,15 +68,26 @@ fun StartProfileScreen(
             }
         }
     ) { innerPadding ->
-        Column(modifier = Modifier.padding(innerPadding).padding(16.dp)) {
-            Button(onClick = { onLogoutButtonClicked() }) {
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.SpaceBetween
+            ) {
+            Button(
+                onClick = { onLogoutButtonClicked() },
+                colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary)
+            ) {
                 Text(text = stringResource(R.string.profile_logout))
             }
 
             Spacer(modifier = Modifier.size(12.dp))
 
             Box {
-                Button(onClick = { menuExpanded = true }) {
+                Button(
+                    onClick = { menuExpanded = true },
+                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary)
+                ) {
                     Text(
                         text = stringResource(
                             R.string.profile_users_json_selector,
