@@ -7,7 +7,7 @@
       "distance": 2.4,
       "bio": "Diseno interfaces y saco fotos urbanas los fines de semana.",
       "resName": "aimar_1",
-      "firebaseUid": "8G5ejgXmC3g83tZk8H52m0SmBcWN",
+      "firebaseUid": "1kA3hPwcPrNHvtPmZoLS6aGcpy82",
       "galleryResName": [
         "aimar_2",
         "aimar_3",
@@ -23,7 +23,7 @@
       "distance": 5.8,
       "bio": "Me gusta correr al amanecer y escuchar podcasts de tecnologia.",
       "resName": "ander_1",
-      "firebaseUid": "fFORe3aZsxQiYXyCKJ2jA3IrvpOz",
+      "firebaseUid": "gayTR10KpEefs00gmMefM1ii7In2",
       "galleryResName": [
         "ander_2",
         "ander_3",
@@ -41,7 +41,7 @@
       "distance": 1.7,
       "bio": "Estoy aprendiendo Kotlin y probando recetas nuevas cada semana.",
       "resName": "bingen_1",
-      "firebaseUid": "N5H13TAyqdg3EDcgBIirkaEB0KaX",
+      "firebaseUid": "6venpZ1CKWXMlFqeQ0lvnoQIUKv1",
       "galleryResName": [
         "bingen_2"
       ],
@@ -54,7 +54,7 @@
       "distance": 4.1,
       "bio": "Paso las tardes jugando al basket y editando video corto.",
       "resName": "ibai_1",
-      "firebaseUid": "ibai_id",
+      "firebaseUid": "aFZ1M0GARONBlaDsr7KsVR42sNB2",
       "galleryResName": [
         "ibai_2",
         "ibai_3",
@@ -72,7 +72,7 @@
       "distance": 7.3,
       "bio": "Colecciono vinilos y siempre busco cafeterias tranquilas.",
       "resName": "ioritz_1",
-      "firebaseUid": "ioritz_id",
+      "firebaseUid": "yoqNL7pHftPxRNDkbQgaXf7VGl52",
       "galleryResName": [
         "ioritz_2",
         "ioritz_3",
@@ -98,7 +98,7 @@
       "distance": 3.2,
       "bio": "Trabajo en remoto y salgo en bici por rutas de montana.",
       "resName": "jon_1",
-      "firebaseUid": "jon_id",
+      "firebaseUid": "LTwqvukalXb1LWFqeXbqh32nALl1",
       "galleryResName": [
         "jon_2",
         "jon_3",
@@ -115,7 +115,7 @@
       "distance": 6.6,
       "bio": "Estoy montando una app indie y toco guitarra por la noche.",
       "resName": "joseba_1",
-      "firebaseUid": "joseba_id",
+      "firebaseUid": "J5zlNl60legbP0qfIgibBpD8kXW2",
       "galleryResName": [
         "joseba_2",
         "joseba_3",
@@ -134,7 +134,7 @@
       "distance": 8.9,
       "bio": "Me encanta la cocina asiatica y entrenar fuerza temprano.",
       "resName": "julen_1",
-      "firebaseUid": "julen_id",
+      "firebaseUid": "aRj14HzE9OO9nbwmXZaTEJ9dacD2",
       "galleryResName": [
         "julen_2",
         "julen_3",
@@ -151,7 +151,7 @@
       "distance": 2.1,
       "bio": "Hago senderismo los domingos y leo ciencia ficcion.",
       "resName": "mikel_1",
-      "firebaseUid": "mikel_id",
+      "firebaseUid": "HIVBBnSZGMclxOB0xEgUMMmHHOZ2",
       "galleryResName": [
         "mikel_2",
         "mikel_3",
@@ -168,7 +168,7 @@
       "distance": 9.4,
       "bio": "Aficionado al diseno 3D y a perderme por mercadillos.",
       "resName": "oihan_1",
-      "firebaseUid": "oihan_id",
+      "firebaseUid": "xz7K0ji0nFfX1DFlvviI8K8jnbE2",
       "galleryResName": [
         "oihan_2",
         "oihan_3",
@@ -186,24 +186,16 @@
     },
     {
       "userId": 11,
-      "username": "Rosenda",
+      "username": "Amaia",
       "age": 28,
       "distance": 9.4,
-      "bio": "ola soi la rozenda",
-      "resName": "wenasa",
-      "firebaseUid": "q6szgxJA17rZUJl7dLzoRKSxDphc",
+      "bio": "Me gusta el arte contemporaneo y las series de misterio.",
+      "resName": "amaia_1",
+      "firebaseUid": "Of3xkqH3X1Y4AOgrCSqWtIuiTZn2",
       "galleryResName": [
-        "oihan_2",
-        "oihan_3",
-        "oihan_4",
-        "oihan_5",
-        "oihan_6",
-        "oihan_7",
-        "oihan_8",
-        "oihan_9",
-        "oihan_10",
-        "oihan_11",
-        "oihan_12"
+        "amaia_1",
+        "amaia_1",
+        "amaia_1"
       ],
       "isBlocked": false
     }
@@ -211,48 +203,48 @@
   "messages": [
     {
       "text": "Hola Aimar, me encanta tu perfil.",
-      "senderUid": "q6szgxJA17rZUJl7dLzoRKSxDphc",
-      "receiverUid": "8G5ejgXmC3g83tZk8H52m0SmBcWN",
+      "senderUid": "Of3xkqH3X1Y4AOgrCSqWtIuiTZn2",
+      "receiverUid": "1kA3hPwcPrNHvtPmZoLS6aGcpy82",
       "timestamp": 1710000000000,
       "read": true,
       "messageId": "seed_0_1710000000000"
     },
     {
       "text": "Gracias! Te apetece tomar un cafe esta semana?",
-      "senderUid": "8G5ejgXmC3g83tZk8H52m0SmBcWN",
-      "receiverUid": "q6szgxJA17rZUJl7dLzoRKSxDphc",
+      "senderUid": "1kA3hPwcPrNHvtPmZoLS6aGcpy82",
+      "receiverUid": "Of3xkqH3X1Y4AOgrCSqWtIuiTZn2",
       "timestamp": 1710000060000,
       "read": false,
       "messageId": "seed_1_1710000060000"
     },
     {
       "text": "He visto que escuchas podcasts de tecnologia 👀",
-      "senderUid": "q6szgxJA17rZUJl7dLzoRKSxDphc",
-      "receiverUid": "fFORe3aZsxQiYXyCKJ2jA3IrvpOz",
+      "senderUid": "Of3xkqH3X1Y4AOgrCSqWtIuiTZn2",
+      "receiverUid": "gayTR10KpEefs00gmMefM1ii7In2",
       "timestamp": 1710000120000,
       "read": true,
       "messageId": "seed_2_1710000120000"
     },
     {
       "text": "Si, y tambien corro al amanecer. Planazo raro pero funciona.",
-      "senderUid": "fFORe3aZsxQiYXyCKJ2jA3IrvpOz",
-      "receiverUid": "q6szgxJA17rZUJl7dLzoRKSxDphc",
+      "senderUid": "gayTR10KpEefs00gmMefM1ii7In2",
+      "receiverUid": "Of3xkqH3X1Y4AOgrCSqWtIuiTZn2",
       "timestamp": 1710000180000,
       "read": true,
       "messageId": "seed_3_1710000180000"
     },
     {
       "text": "Yo tambien estoy aprendiendo Kotlin, que tal lo llevas?",
-      "senderUid": "N5H13TAyqdg3EDcgBIirkaEB0KaX",
-      "receiverUid": "q6szgxJA17rZUJl7dLzoRKSxDphc",
+      "senderUid": "6venpZ1CKWXMlFqeQ0lvnoQIUKv1",
+      "receiverUid": "Of3xkqH3X1Y4AOgrCSqWtIuiTZn2",
       "timestamp": 1710000240000,
       "read": false,
       "messageId": "seed_4_1710000240000"
     },
     {
       "text": "Poco a poco, pero Compose me esta gustando mucho.",
-      "senderUid": "q6szgxJA17rZUJl7dLzoRKSxDphc",
-      "receiverUid": "N5H13TAyqdg3EDcgBIirkaEB0KaX",
+      "senderUid": "Of3xkqH3X1Y4AOgrCSqWtIuiTZn2",
+      "receiverUid": "6venpZ1CKWXMlFqeQ0lvnoQIUKv1",
       "timestamp": 1710000300000,
       "read": false,
       "messageId": "seed_5_1710000300000"
