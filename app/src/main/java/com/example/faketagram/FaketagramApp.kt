@@ -38,12 +38,12 @@ import androidx.navigation.toRoute
 import com.example.faketagram.data.model.Chat
 import com.example.faketagram.data.service.DataManagementService
 import com.example.faketagram.data.service.ResourcesService
-import com.example.faketagram.ui.StartBlockedUserScreen
-import com.example.faketagram.ui.StartChatScreen
-import com.example.faketagram.ui.StartFeedScreen
-import com.example.faketagram.ui.StartProfileScreen
-import com.example.faketagram.ui.StartUserChatScreen
-import com.example.faketagram.ui.StartUserProfileScreen
+import com.example.faketagram.ui.nav.StartBlockedUserScreen
+import com.example.faketagram.ui.nav.StartChatScreen
+import com.example.faketagram.ui.nav.StartFeedScreen
+import com.example.faketagram.ui.nav.StartProfileScreen
+import com.example.faketagram.ui.nav.StartUserChatScreen
+import com.example.faketagram.ui.nav.StartUserProfileScreen
 import com.example.faketagram.ui.model.UsersViewModel
 import com.example.faketagram.ui.nav.Screen
 import com.example.faketagram.ui.nav.UserChatRoute
@@ -63,14 +63,19 @@ fun FaketagramApp(
 
     val backStackEntry by navController.currentBackStackEntryAsState()
     val route = backStackEntry?.destination?.route
-    val isUserProfileRoute = route?.contains(UserProfileRoute::class.qualifiedName.orEmpty()) == true
+    val isUserProfileRoute =
+        route?.contains(UserProfileRoute::class.qualifiedName.orEmpty()) == true
     val isUserChatRoute = route?.contains(UserChatRoute::class.qualifiedName.orEmpty()) == true
 
     val uiState by viewModel.uiState.collectAsState()
 
     // Show nav bar on chat route only when user is blocked (shows blocked screen, not chat)
     val blockedChatUserId = if (isUserChatRoute) {
-        try { backStackEntry?.toRoute<UserChatRoute>()?.userId } catch (_: Exception) { null }
+        try {
+            backStackEntry?.toRoute<UserChatRoute>()?.userId
+        } catch (_: Exception) {
+            null
+        }
     } else null
     val isChatRouteBlocked = blockedChatUserId != null && uiState.isUserBlocked(blockedChatUserId)
 
@@ -81,15 +86,11 @@ fun FaketagramApp(
             isChatRouteBlocked
 
     LaunchedEffect(Unit) {
-        context(resourcesService) {
-            dataService.getUsersFromJson(R.raw.users)
-        }
-        context(dataService, context.applicationContext) {
-            viewModel.init()
+        context(dataService, resourcesService, context.applicationContext) {
+            viewModel.loadUiStateContents()
         }
     }
 
-    // Navigate to chat when app is opened from a notification
     LaunchedEffect(initialChatUserId) {
         val userId = initialChatUserId ?: return@LaunchedEffect
         navController.navigate(UserChatRoute(userId)) {
@@ -178,7 +179,7 @@ fun FaketagramApp(
                         onChatOpened = {
                             viewModel.setActiveChatUserId(it)
                             viewModel.setAllMessagesAsReadByUser(it)
-                                       },
+                        },
                         onChatClosed = { viewModel.clearActiveChatUserId() },
                         deleteMessage = { viewModel.deleteMessage(it) }
                     )
@@ -186,6 +187,13 @@ fun FaketagramApp(
             }
             composable(route = Screen.PROFILE.name) {
                 StartProfileScreen(
+                    availableUsersJsonNames = uiState.availableUsersJsonNames,
+                    selectedUsersJsonName = uiState.selectedUsersJsonName,
+                    onUsersJsonSelected = { jsonName ->
+                        context(dataService, resourcesService, context.applicationContext) {
+                            viewModel.selectUsersJson(jsonName)
+                        }
+                    },
                     onLogoutButtonClicked = {
                         viewModel.logout()
                     },

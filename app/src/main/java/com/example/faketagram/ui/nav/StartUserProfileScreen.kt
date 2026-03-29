@@ -1,4 +1,4 @@
-package com.example.faketagram.ui
+package com.example.faketagram.ui.nav
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -227,7 +228,7 @@ private fun BoxScope.BottomActionsOverlay(
 
 @Composable
 private fun ProfileActionIcon(
-    imageVector: androidx.compose.ui.graphics.vector.ImageVector,
+    imageVector: ImageVector,
     contentDescription: String,
     onClick: () -> Unit,
 ) {

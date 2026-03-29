@@ -1,0 +1,261 @@
+{
+  "users": [
+    {
+      "userId": 1,
+      "username": "Aimar",
+      "age": 24,
+      "distance": 2.4,
+      "bio": "Diseno interfaces y saco fotos urbanas los fines de semana.",
+      "resName": "aimar_1",
+      "firebaseUid": "8G5ejgXmC3g83tZk8H52m0SmBcWN",
+      "galleryResName": [
+        "aimar_2",
+        "aimar_3",
+        "aimar_4",
+        "aimar_5"
+      ],
+      "isBlocked": false
+    },
+    {
+      "userId": 2,
+      "username": "Ander",
+      "age": 27,
+      "distance": 5.8,
+      "bio": "Me gusta correr al amanecer y escuchar podcasts de tecnologia.",
+      "resName": "ander_1",
+      "firebaseUid": "fFORe3aZsxQiYXyCKJ2jA3IrvpOz",
+      "galleryResName": [
+        "ander_2",
+        "ander_3",
+        "ander_4",
+        "ander_5",
+        "ander_6",
+        "ander_7"
+      ],
+      "isBlocked": false
+    },
+    {
+      "userId": 3,
+      "username": "Bingen",
+      "age": 22,
+      "distance": 1.7,
+      "bio": "Estoy aprendiendo Kotlin y probando recetas nuevas cada semana.",
+      "resName": "bingen_1",
+      "firebaseUid": "N5H13TAyqdg3EDcgBIirkaEB0KaX",
+      "galleryResName": [
+        "bingen_2"
+      ],
+      "isBlocked": false
+    },
+    {
+      "userId": 4,
+      "username": "Ibai",
+      "age": 29,
+      "distance": 4.1,
+      "bio": "Paso las tardes jugando al basket y editando video corto.",
+      "resName": "ibai_1",
+      "firebaseUid": "ibai_id",
+      "galleryResName": [
+        "ibai_2",
+        "ibai_3",
+        "ibai_4",
+        "ibai_5",
+        "ibai_6",
+        "ibai_7"
+      ],
+      "isBlocked": false
+    },
+    {
+      "userId": 5,
+      "username": "Ioritz",
+      "age": 21,
+      "distance": 7.3,
+      "bio": "Colecciono vinilos y siempre busco cafeterias tranquilas.",
+      "resName": "ioritz_1",
+      "firebaseUid": "ioritz_id",
+      "galleryResName": [
+        "ioritz_2",
+        "ioritz_3",
+        "ioritz_4",
+        "ioritz_5",
+        "ioritz_6",
+        "ioritz_7",
+        "ioritz_8",
+        "ioritz_9",
+        "ioritz_10",
+        "ioritz_11",
+        "ioritz_12",
+        "ioritz_13",
+        "ioritz_14",
+        "ioritz_15"
+      ],
+      "isBlocked": false
+    },
+    {
+      "userId": 6,
+      "username": "Jon",
+      "age": 25,
+      "distance": 3.2,
+      "bio": "Trabajo en remoto y salgo en bici por rutas de montana.",
+      "resName": "jon_1",
+      "firebaseUid": "jon_id",
+      "galleryResName": [
+        "jon_2",
+        "jon_3",
+        "jon_4",
+        "jon_5",
+        "jon_6"
+      ],
+      "isBlocked": false
+    },
+    {
+      "userId": 7,
+      "username": "Joseba",
+      "age": 23,
+      "distance": 6.6,
+      "bio": "Estoy montando una app indie y toco guitarra por la noche.",
+      "resName": "joseba_1",
+      "firebaseUid": "joseba_id",
+      "galleryResName": [
+        "joseba_2",
+        "joseba_3",
+        "joseba_4",
+        "joseba_5",
+        "joseba_6",
+        "joseba_7",
+        "joseba_8"
+      ],
+      "isBlocked": false
+    },
+    {
+      "userId": 8,
+      "username": "Julen",
+      "age": 30,
+      "distance": 8.9,
+      "bio": "Me encanta la cocina asiatica y entrenar fuerza temprano.",
+      "resName": "julen_1",
+      "firebaseUid": "julen_id",
+      "galleryResName": [
+        "julen_2",
+        "julen_3",
+        "julen_4",
+        "julen_5",
+        "julen_6"
+      ],
+      "isBlocked": false
+    },
+    {
+      "userId": 9,
+      "username": "Mikel",
+      "age": 26,
+      "distance": 2.1,
+      "bio": "Hago senderismo los domingos y leo ciencia ficcion.",
+      "resName": "mikel_1",
+      "firebaseUid": "mikel_id",
+      "galleryResName": [
+        "mikel_2",
+        "mikel_3",
+        "mikel_4",
+        "mikel_5",
+        "mikel_6"
+      ],
+      "isBlocked": false
+    },
+    {
+      "userId": 10,
+      "username": "Oihan",
+      "age": 28,
+      "distance": 9.4,
+      "bio": "Aficionado al diseno 3D y a perderme por mercadillos.",
+      "resName": "oihan_1",
+      "firebaseUid": "oihan_id",
+      "galleryResName": [
+        "oihan_2",
+        "oihan_3",
+        "oihan_4",
+        "oihan_5",
+        "oihan_6",
+        "oihan_7",
+        "oihan_8",
+        "oihan_9",
+        "oihan_10",
+        "oihan_11",
+        "oihan_12"
+      ],
+      "isBlocked": false
+    },
+    {
+      "userId": 11,
+      "username": "Rosenda",
+      "age": 28,
+      "distance": 9.4,
+      "bio": "ola soi la rozenda",
+      "resName": "wenasa",
+      "firebaseUid": "q6szgxJA17rZUJl7dLzoRKSxDphc",
+      "galleryResName": [
+        "oihan_2",
+        "oihan_3",
+        "oihan_4",
+        "oihan_5",
+        "oihan_6",
+        "oihan_7",
+        "oihan_8",
+        "oihan_9",
+        "oihan_10",
+        "oihan_11",
+        "oihan_12"
+      ],
+      "isBlocked": false
+    }
+  ],
+  "messages": [
+    {
+      "text": "Hola Aimar, me encanta tu perfil.",
+      "senderUid": "q6szgxJA17rZUJl7dLzoRKSxDphc",
+      "receiverUid": "8G5ejgXmC3g83tZk8H52m0SmBcWN",
+      "timestamp": 1710000000000,
+      "read": true,
+      "messageId": "seed_0_1710000000000"
+    },
+    {
+      "text": "Gracias! Te apetece tomar un cafe esta semana?",
+      "senderUid": "8G5ejgXmC3g83tZk8H52m0SmBcWN",
+      "receiverUid": "q6szgxJA17rZUJl7dLzoRKSxDphc",
+      "timestamp": 1710000060000,
+      "read": false,
+      "messageId": "seed_1_1710000060000"
+    },
+    {
+      "text": "He visto que escuchas podcasts de tecnologia 👀",
+      "senderUid": "q6szgxJA17rZUJl7dLzoRKSxDphc",
+      "receiverUid": "fFORe3aZsxQiYXyCKJ2jA3IrvpOz",
+      "timestamp": 1710000120000,
+      "read": true,
+      "messageId": "seed_2_1710000120000"
+    },
+    {
+      "text": "Si, y tambien corro al amanecer. Planazo raro pero funciona.",
+      "senderUid": "fFORe3aZsxQiYXyCKJ2jA3IrvpOz",
+      "receiverUid": "q6szgxJA17rZUJl7dLzoRKSxDphc",
+      "timestamp": 1710000180000,
+      "read": true,
+      "messageId": "seed_3_1710000180000"
+    },
+    {
+      "text": "Yo tambien estoy aprendiendo Kotlin, que tal lo llevas?",
+      "senderUid": "N5H13TAyqdg3EDcgBIirkaEB0KaX",
+      "receiverUid": "q6szgxJA17rZUJl7dLzoRKSxDphc",
+      "timestamp": 1710000240000,
+      "read": false,
+      "messageId": "seed_4_1710000240000"
+    },
+    {
+      "text": "Poco a poco, pero Compose me esta gustando mucho.",
+      "senderUid": "q6szgxJA17rZUJl7dLzoRKSxDphc",
+      "receiverUid": "N5H13TAyqdg3EDcgBIirkaEB0KaX",
+      "timestamp": 1710000300000,
+      "read": false,
+      "messageId": "seed_5_1710000300000"
+    }
+  ]
+}

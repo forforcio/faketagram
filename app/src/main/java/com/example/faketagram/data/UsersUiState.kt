@@ -10,6 +10,8 @@ data class UsersUiState(
     val users: List<User>,
     val messages: List<Message> = emptyList(),
     val authenticatedUserUid: String = "",
+    val availableUsersJsonNames: List<String> = emptyList(),
+    val selectedUsersJsonName: String = "",
     val isLoading: Boolean = false,
     val error: String? = null,
 ) {
