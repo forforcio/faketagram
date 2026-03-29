@@ -11,17 +11,17 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Faketagram">
+        android:theme="@style/Theme.Meelt">
         <activity
             android:name=".SignInActivity"
             android:exported="false"
-            android:theme="@style/Theme.Faketagram">
+            android:theme="@style/Theme.Meelt">
         </activity>
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
-            android:theme="@style/Theme.Faketagram">
+            android:theme="@style/Theme.Meelt">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
