@@ -197,6 +197,7 @@ fun ChatView(
                 Column(
                     modifier = Modifier
                         .padding(horizontal = 15.dp, vertical = 8.dp)
+                        .fillMaxSize(0.8f)
                 ) {
                     Text(
                         text = user.username,
