@@ -56,4 +56,5 @@
     <string name="fallback_message_demo_1">Que casualidad, yo tambien soy un mensaje de prueba!</string>
     <string name="fallback_message_demo_2">Hola soy un mensaje de prueba</string>
     <string name="chat_no_messages_yet">There are no messages yet</string>
+    <string name="chat_message_image">Imagen</string>
 </resources>

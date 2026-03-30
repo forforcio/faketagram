@@ -1,5 +1,8 @@
 package com.izzo.meelt.data.model
 
+import androidx.compose.ui.res.stringResource
+import com.izzo.meelt.R
+
 class Chat(
     val interlocutor: User,
     val messages: List<Message> = emptyList()
