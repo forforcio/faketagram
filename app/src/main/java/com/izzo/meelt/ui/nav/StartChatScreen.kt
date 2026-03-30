@@ -152,12 +152,24 @@ fun StartChatScreen(
                     onClick = {
                         onUserClick(chat.interlocutor)
                     },
-                    lastMessage = chat.getLastMessage()?.text?: stringResource(R.string.chat_no_messages_yet),
+                    lastMessage = lastMessageText(chat),
                     messagesUnread = chat.getPendingMessagesCount()
                 )
             }
         }
     }
+}
+
+@Composable
+fun lastMessageText(chat: Chat): String {
+    val lastMessage = chat.getLastMessage()
+    if (lastMessage == null) {
+        return stringResource(R.string.chat_no_messages_yet)
+    }
+    if (!lastMessage.imageUrl.isNullOrBlank()) {
+        return stringResource(R.string.chat_message_image)
+    }
+    else return lastMessage.text ?: ""
 }
 
 @Composable
