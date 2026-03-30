@@ -262,21 +262,31 @@ private fun EditableBottomBar(
                                 .requiredSize(28.dp)
                                 .border(
                                     width = 2.dp,
-                                    color = MaterialTheme.colorScheme.secondary,
+                                    color = MaterialTheme.colorScheme.tertiary,
                                     shape = CircleShape
                                 ),
                             contentScale = ContentScale.Crop
                         )
                     } else {
-                        Icon(
-                            imageVector = screen.icon,
-                            contentDescription = when (screen) {
-                                Screen.HOME -> stringResource(R.string.nav_home)
-                                Screen.CHAT -> stringResource(R.string.nav_chat)
-                                Screen.PROFILE -> stringResource(R.string.nav_profile)
-                            },
-                            tint = MaterialTheme.colorScheme.secondary
-                        )
+                        val contentDescription = when (screen) {
+                            Screen.HOME -> stringResource(R.string.nav_home)
+                            Screen.CHAT -> stringResource(R.string.nav_chat)
+                            Screen.PROFILE -> stringResource(R.string.nav_profile)
+                        }
+                        val iconRes = screen.iconRes
+                        if (iconRes != null) {
+                            Icon(
+                                painter = painterResource(id = iconRes),
+                                contentDescription = contentDescription,
+                                tint = MaterialTheme.colorScheme.secondary
+                            )
+                        } else {
+                            Icon(
+                                imageVector = checkNotNull(screen.icon),
+                                contentDescription = contentDescription,
+                                tint = MaterialTheme.colorScheme.secondary
+                            )
+                        }
                     }
                 }
             )

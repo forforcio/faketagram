@@ -2,17 +2,19 @@ package com.izzo.meelt.ui.nav
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.ChatBubbleOutline
 import androidx.compose.material.icons.filled.Home
+import androidx.annotation.DrawableRes
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.izzo.meelt.R
 import kotlinx.serialization.Serializable
 
 enum class Screen(
-    val icon: ImageVector,
+    val icon: ImageVector? = null,
+    @param:DrawableRes val iconRes: Int? = null,
 ) {
-    HOME(Icons.Default.Home),
-    CHAT(Icons.Default.ChatBubbleOutline),
-    PROFILE(Icons.Default.AccountCircle)
+    HOME(icon = Icons.Default.Home),
+    CHAT(iconRes = R.drawable.chats_icon),
+    PROFILE(icon = Icons.Default.AccountCircle)
 }
 
 @Serializable
