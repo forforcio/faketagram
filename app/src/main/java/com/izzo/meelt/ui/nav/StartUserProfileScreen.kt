@@ -38,6 +38,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.izzo.meelt.R
 import com.izzo.meelt.data.model.User
 import java.util.Locale
@@ -184,7 +185,9 @@ private fun BoxScope.AboutMeOverlay(bio: String) {
         )
         Text(
             text = bio,
-            style = MaterialTheme.typography.bodyLarge,
+            style = MaterialTheme.typography.bodyLarge.copy(
+                lineHeight = 15.sp
+            ),
             color = Color.White
         )
     }

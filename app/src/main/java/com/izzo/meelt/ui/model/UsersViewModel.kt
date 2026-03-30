@@ -3,6 +3,7 @@ package com.izzo.meelt.ui.model
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import com.izzo.meelt.BuildConfig
 import com.izzo.meelt.R
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -29,11 +30,7 @@ import kotlinx.coroutines.launch
 class UsersViewModel : ViewModel() {
 
     private val db: FirebaseDatabase by lazy {
-        Firebase.database.apply {
-//            if (BuildConfig.DEBUG) {
-//                useEmulator("127.0.0.1", 9000)
-//            }
-        }
+        Firebase.database.apply {}
     }
 
     private val _uiState = MutableStateFlow(UsersUiState(emptyList()))
@@ -57,12 +54,14 @@ class UsersViewModel : ViewModel() {
 
             val selectedUsersJsonName = dataService.loadSelectedUsersFromPreferences(context)
             val users = dataService.getAllUsers()
+            val preloadedMessages = dataService.getAllMessages()
             val currentUserUid = Firebase.auth.currentUser?.uid.orEmpty()
             val availableUsersJsonNames = dataService.getAvailableUsersJsonNames()
 
             _uiState.update {
                 it.copy(
                     users = users,
+                    messages = preloadedMessages,
                     authenticatedUserUid = currentUserUid,
                     availableUsersJsonNames = availableUsersJsonNames,
                     selectedUsersJsonName = selectedUsersJsonName,
@@ -70,7 +69,7 @@ class UsersViewModel : ViewModel() {
                 )
             }
 
-            startMessagesListener()
+            replaceDatabaseMessagesWith(preloadedMessages)
         }
     }
 
