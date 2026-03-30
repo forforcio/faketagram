@@ -9,6 +9,7 @@ import com.izzo.meelt.data.model.User
 data class UsersUiState(
     val users: List<User>,
     val messages: List<Message> = emptyList(),
+    val pendingImagePreviews: Map<String, String> = emptyMap(),
     val authenticatedUserUid: String = "",
     val availableUsersJsonNames: List<String> = emptyList(),
     val selectedUsersJsonName: String = "",
@@ -73,6 +74,11 @@ data class UsersUiState(
                         (m.senderUid == otherUid && m.receiverUid == authenticatedUserUid)
             }
             .sortedBy { it.timestamp }
+    }
+
+    fun getPendingImagePreview(messageId: String?): String? {
+        if (messageId.isNullOrBlank()) return null
+        return pendingImagePreviews[messageId]
     }
 
     fun getChatsOrdered(): List<Chat> {
