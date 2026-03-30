@@ -1,5 +1,7 @@
 package com.izzo.meelt.ui.model
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.content.Context
 import android.net.Uri
 import android.util.Log
@@ -19,6 +21,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.database
+import com.google.firebase.storage.StorageException
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.storage
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -323,6 +326,48 @@ class UsersViewModel : ViewModel() {
     }
 
     fun deleteMessage(message: Message) {
+        val imageUrl = message.imageUrl
+        val hasFirebaseImage = !imageUrl.isNullOrBlank() &&
+                imageUrl != LOADING_IMAGE_URL &&
+                (imageUrl.startsWith("https://firebasestorage.googleapis.com") || imageUrl.startsWith("gs://"))
+
+        if (!hasFirebaseImage) {
+            deleteMessageFromDatabase(message)
+            return
+        }
+
+        val firebaseImageUrl = imageUrl ?: run {
+            deleteMessageFromDatabase(message)
+            return
+        }
+
+        Firebase.storage.getReferenceFromUrl(firebaseImageUrl)
+            .delete()
+            .addOnSuccessListener {
+                Log.d(TAG, "Image deleted from Storage for messageId=${message.messageId}")
+                deleteMessageFromDatabase(message)
+            }
+            .addOnFailureListener { e ->
+                val storageError = e as? StorageException
+                if (storageError?.errorCode == StorageException.ERROR_OBJECT_NOT_FOUND) {
+                    // File is already gone; keep deleting the message to avoid stale rows.
+                    Log.w(TAG, "Image already removed in Storage for messageId=${message.messageId}")
+                    deleteMessageFromDatabase(message)
+                } else {
+                    Log.w(TAG, "Unable to delete image from Storage for messageId=${message.messageId}", e)
+                    _uiState.update {
+                        it.copy(
+                            error = appContext?.getString(
+                                R.string.chat_error_send_message,
+                                e.message.orEmpty()
+                            ) ?: "Error deleting image: ${e.message}"
+                        )
+                    }
+                }
+            }
+    }
+
+    private fun deleteMessageFromDatabase(message: Message) {
         val messageId = message.messageId
         if (!messageId.isNullOrBlank()) {
             db.reference
@@ -434,10 +479,14 @@ class UsersViewModel : ViewModel() {
             imageUrl = LOADING_IMAGE_URL,
             timestamp = System.currentTimeMillis()
         )
+
+        addPendingImagePreview(key, uri.toString())
+
         messageRef.setValue(
                 tempMessage,
                 DatabaseReference.CompletionListener { databaseError, databaseReference ->
                     if (databaseError != null) {
+                        removePendingImagePreview(key)
                         Log.w(
                             TAG, "Unable to write message to database.",
                             databaseError.toException()
@@ -461,8 +510,15 @@ class UsersViewModel : ViewModel() {
         uri: Uri,
         key: String?
     ) {
+        val compressedBytes = buildCompressedImageBytes(uri)
+        val uploadTask = if (compressedBytes != null) {
+            storageReference.putBytes(compressedBytes)
+        } else {
+            storageReference.putFile(uri)
+        }
+
         // First upload the image to Cloud Storage
-        storageReference.putFile(uri)
+        uploadTask
             .addOnSuccessListener { taskSnapshot -> // After the image loads, get a public downloadUrl for the image
                 // and add it to the message.
                 taskSnapshot.metadata!!.reference!!.downloadUrl
@@ -476,15 +532,89 @@ class UsersViewModel : ViewModel() {
                             .child(MESSAGES_CHILD)
                             .child(key!!)
                             .setValue(friendlyMessage)
+                            .addOnCompleteListener {
+                                removePendingImagePreview(key)
+                            }
                     }
             }
             .addOnFailureListener { e ->
+                removePendingImagePreview(key)
                 Log.w(
                     TAG,
                     "Image upload task was unsuccessful.",
                     e
                 )
+                // Clean temporary placeholder message if upload fails.
+                if (!key.isNullOrBlank()) {
+                    db.reference.child(MESSAGES_CHILD).child(key).removeValue()
+                }
             }
+    }
+
+    private fun addPendingImagePreview(messageId: String, previewUri: String) {
+        _uiState.update { current ->
+            current.copy(
+                pendingImagePreviews = current.pendingImagePreviews + (messageId to previewUri)
+            )
+        }
+    }
+
+    private fun removePendingImagePreview(messageId: String?) {
+        if (messageId.isNullOrBlank()) return
+        _uiState.update { current ->
+            current.copy(
+                pendingImagePreviews = current.pendingImagePreviews - messageId
+            )
+        }
+    }
+
+    private fun buildCompressedImageBytes(uri: Uri): ByteArray? {
+        val context = appContext ?: return null
+        return try {
+            val resolver = context.contentResolver
+
+            val boundsOptions = BitmapFactory.Options().apply {
+                inJustDecodeBounds = true
+            }
+            resolver.openInputStream(uri)?.use { stream ->
+                BitmapFactory.decodeStream(stream, null, boundsOptions)
+            } ?: return null
+
+            val maxDimension = 1280
+            val sampleSize = calculateInSampleSize(
+                width = boundsOptions.outWidth,
+                height = boundsOptions.outHeight,
+                maxDimension = maxDimension
+            )
+
+            val decodeOptions = BitmapFactory.Options().apply {
+                inSampleSize = sampleSize
+                inPreferredConfig = Bitmap.Config.ARGB_8888
+            }
+
+            val bitmap = resolver.openInputStream(uri)?.use { stream ->
+                BitmapFactory.decodeStream(stream, null, decodeOptions)
+            } ?: return null
+
+            val output = java.io.ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 72, output)
+            bitmap.recycle()
+            output.toByteArray()
+        } catch (e: Exception) {
+            Log.w(TAG, "Unable to compress image before upload, using original file", e)
+            null
+        }
+    }
+
+    private fun calculateInSampleSize(width: Int, height: Int, maxDimension: Int): Int {
+        if (width <= 0 || height <= 0 || maxDimension <= 0) return 1
+        var inSampleSize = 1
+        var halfWidth = width / 2
+        var halfHeight = height / 2
+        while ((halfWidth / inSampleSize) >= maxDimension || (halfHeight / inSampleSize) >= maxDimension) {
+            inSampleSize *= 2
+        }
+        return inSampleSize.coerceAtLeast(1)
     }
 
     fun setAllMessagesAsReadByUser(senderId: Int) {
@@ -512,6 +642,6 @@ class UsersViewModel : ViewModel() {
     companion object {
         private const val TAG = "MainActivity"
         const val MESSAGES_CHILD = "messages"
-        private const val LOADING_IMAGE_URL = "https://www.google.com/images/spin-32.gif"
+        const val LOADING_IMAGE_URL = "https://www.google.com/images/spin-32.gif"
     }
 }

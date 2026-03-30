@@ -34,6 +34,7 @@ import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -64,6 +65,7 @@ import com.izzo.meelt.data.UsersUiState
 import com.izzo.meelt.data.model.Chat
 import com.izzo.meelt.data.model.Message
 import com.izzo.meelt.data.model.User
+import com.izzo.meelt.ui.model.UsersViewModel
 import java.io.File
 
 @Composable
@@ -268,6 +270,7 @@ fun StartUserChatScreen(
                 MessageDisplay(
                     user = sender,
                     message = message,
+                    localPreviewUri = uiState.getPendingImagePreview(message.messageId),
                     isReceived = sender == chat.interlocutor,
                     deleteMessage = { deleteMessage(message) }
                 )
@@ -290,6 +293,7 @@ private fun createTempImageUri(context: Context): Uri {
 fun MessageDisplay(
     user: User,
     message: Message,
+    localPreviewUri: String?,
     isReceived: Boolean,
     deleteMessage: (Message) -> Unit
 ) {
@@ -314,6 +318,8 @@ fun MessageDisplay(
             ) {
                 MessageBubble(
                     message = message,
+                    localPreviewUri = localPreviewUri,
+                    showLoadingIndicator = true,
                     modifier = Modifier,
                     color = MaterialTheme.colorScheme.tertiary,
                     fontColor = Color.White,
@@ -327,6 +333,8 @@ fun MessageDisplay(
             ) {
                 MessageBubble(
                     message = message,
+                    localPreviewUri = localPreviewUri,
+                    showLoadingIndicator = false,
                     modifier = Modifier,
                     color = MaterialTheme.colorScheme.surface,
                     fontColor = Color.Black,
@@ -348,6 +356,8 @@ fun MessageDisplay(
 @Composable
 private fun MessageBubble(
     message: Message,
+    localPreviewUri: String?,
+    showLoadingIndicator: Boolean,
     modifier: Modifier = Modifier,
     color: Color,
     fontColor: Color,
@@ -359,16 +369,40 @@ private fun MessageBubble(
             onLongClick = { deleteMessage(message) },
         )
     ) {
-        if (!message.imageUrl.isNullOrBlank()) {
-            AsyncImage(
-                model = message.imageUrl,
-                contentDescription = stringResource(R.string.chat_photo_message),
+        val isUploadingImage = message.imageUrl == UsersViewModel.LOADING_IMAGE_URL
+        val displayImageModel = when {
+            !localPreviewUri.isNullOrBlank() -> localPreviewUri
+            !message.imageUrl.isNullOrBlank() && !isUploadingImage -> message.imageUrl
+            else -> null
+        }
+
+        if (displayImageModel != null || isUploadingImage) {
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(1f)
-                    .clip(RoundedCornerShape(10.dp)),
-                contentScale = ContentScale.Crop
-            )
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+            ) {
+                if (displayImageModel != null) {
+                    AsyncImage(
+                        model = displayImageModel,
+                        contentDescription = stringResource(R.string.chat_photo_message),
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+
+                if (isUploadingImage && showLoadingIndicator) {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .requiredSize(36.dp),
+                        strokeWidth = 3.dp,
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+                }
+            }
         } else {
             Card(
                 modifier = Modifier.widthIn(max = maxWidth),
@@ -385,3 +419,4 @@ private fun MessageBubble(
         }
     }
 }
+
