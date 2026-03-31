@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.runtime.Composable
@@ -82,6 +81,7 @@ fun MeeltApp(
 
     val showNavBar = route == Screen.HOME.name ||
             route == Screen.CHAT.name ||
+            route == Screen.TOOLS.name ||
             route == Screen.PROFILE.name ||
             isUserProfileRoute ||
             isChatRouteBlocked
@@ -126,12 +126,17 @@ fun MeeltApp(
                             UserChatRoute(user.userId)
                         )
                     },
+                    onBlockUser = { user ->
+                        viewModel.blockUser(user.userId)
+                    },
                     modifier = Modifier
                 )
             }
             composable<UserProfileRoute> { backStackEntry ->
                 val profileRoute: UserProfileRoute = backStackEntry.toRoute()
                 val selectedUser = uiState.getUserById(profileRoute.userId)
+                val currentUser = uiState.getAuthenticatedUser()
+                val isCurrentUserProfile = currentUser?.userId == selectedUser.userId
 
                 if (uiState.isUserBlocked(selectedUser.userId)) {
                     StartBlockedUserScreen(
@@ -144,9 +149,16 @@ fun MeeltApp(
                         user = selectedUser,
                         modifier = Modifier.fillMaxSize(),
                         onChatClick = {
-                            navController.navigate(UserChatRoute(selectedUser.userId))
+                            if (!isCurrentUserProfile) {
+                                navController.navigate(UserChatRoute(selectedUser.userId))
+                            }
                         },
-                        onBlockClick = { viewModel.blockUser(it.userId) }
+                        onBlockClick = {
+                            if (!isCurrentUserProfile) {
+                                viewModel.blockUser(it.userId)
+                            }
+                        },
+                        showBottomActions = !isCurrentUserProfile
                     )
                 }
             }
@@ -186,7 +198,7 @@ fun MeeltApp(
                     )
                 }
             }
-            composable(route = Screen.PROFILE.name) {
+            composable(route = Screen.TOOLS.name) {
                 StartProfileScreen(
                     availableUsersJsonNames = uiState.availableUsersJsonNames,
                     selectedUsersJsonName = uiState.selectedUsersJsonName,
@@ -201,6 +213,18 @@ fun MeeltApp(
                     },
                     modifier = Modifier
                 )
+            }
+            composable(route = Screen.PROFILE.name) {
+                val authenticatedUser = uiState.getAuthenticatedUser()
+                if (authenticatedUser != null) {
+                    StartUserProfileScreen(
+                        user = authenticatedUser,
+                        modifier = Modifier.fillMaxSize(),
+                        onChatClick = {},
+                        onBlockClick = {},
+                        showBottomActions = false
+                    )
+                }
             }
         }
     }
@@ -220,11 +244,33 @@ fun MeeltApp(
                     profileImageRes = uiState.getCurrentUserProfilePicture()
                         ?: R.drawable.default_user,
                     onScreenSelected = { screen ->
-                        navController.navigate(screen.name) {
-                            launchSingleTop = true
-                            restoreState = true
-                            popUpTo(navController.graph.startDestinationId) {
-                                saveState = true
+                        when (screen) {
+                            Screen.HOME -> {
+                                // Force return to feed from deep routes (typed routes included).
+                                navController.navigate(Screen.HOME.name) {
+                                    launchSingleTop = true
+                                    popUpTo(navController.graph.startDestinationId) {
+                                        inclusive = false
+                                    }
+                                }
+                            }
+                            Screen.PROFILE -> {
+                                // Open authenticated user's profile screen.
+                                val currentUser = uiState.getAuthenticatedUser()
+                                if (currentUser != null) {
+                                    navController.navigate(UserProfileRoute(currentUser.userId)) {
+                                        launchSingleTop = true
+                                    }
+                                }
+                            }
+                            else -> {
+                                navController.navigate(screen.name) {
+                                    launchSingleTop = true
+                                    restoreState = true
+                                    popUpTo(navController.graph.startDestinationId) {
+                                        saveState = true
+                                    }
+                                }
                             }
                         }
                     }
@@ -242,6 +288,9 @@ private fun EditableBottomBar(
     profileImageRes: Int,
     onScreenSelected: (Screen) -> Unit
 ) {
+    val navIconsColor = Color(0xFFA31419)
+    val navIconSize = 24.dp
+
     NavigationBar(
         containerColor = Color.White.copy(alpha = 0.6f),
         modifier = Modifier
@@ -259,10 +308,10 @@ private fun EditableBottomBar(
                             contentDescription = stringResource(R.string.content_desc_user_photo),
                             modifier = Modifier
                                 .clip(CircleShape)
-                                .requiredSize(28.dp)
+                                .requiredSize(navIconSize)
                                 .border(
                                     width = 2.dp,
-                                    color = MaterialTheme.colorScheme.tertiary,
+                                    color = navIconsColor,
                                     shape = CircleShape
                                 ),
                             contentScale = ContentScale.Crop
@@ -271,20 +320,22 @@ private fun EditableBottomBar(
                         val contentDescription = when (screen) {
                             Screen.HOME -> stringResource(R.string.nav_home)
                             Screen.CHAT -> stringResource(R.string.nav_chat)
-                            Screen.PROFILE -> stringResource(R.string.nav_profile)
+                            Screen.TOOLS -> stringResource(R.string.nav_tools)
                         }
                         val iconRes = screen.iconRes
                         if (iconRes != null) {
                             Icon(
                                 painter = painterResource(id = iconRes),
                                 contentDescription = contentDescription,
-                                tint = MaterialTheme.colorScheme.secondary
+                                tint = navIconsColor,
+                                modifier = Modifier.requiredSize(navIconSize)
                             )
                         } else {
                             Icon(
                                 imageVector = checkNotNull(screen.icon),
                                 contentDescription = contentDescription,
-                                tint = MaterialTheme.colorScheme.secondary
+                                tint = navIconsColor,
+                                modifier = Modifier.requiredSize(navIconSize)
                             )
                         }
                     }

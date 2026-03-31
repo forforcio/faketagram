@@ -38,6 +38,7 @@
 
     <string name="nav_home">Home</string>
     <string name="nav_chat">Chat</string>
+    <string name="nav_tools">Tools</string>
     <string name="nav_profile">Profile</string>
 
     <string name="signin_error_signing_in">There was an error signing in</string>

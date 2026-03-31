@@ -1,6 +1,7 @@
 package com.izzo.meelt.ui.nav
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -50,6 +51,7 @@ fun StartBlockedUserScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(110.dp)
+                    .background(MaterialTheme.colorScheme.primary)
                     .padding(top = 25.dp)
             ) {
                 Image(
@@ -75,7 +77,7 @@ fun StartBlockedUserScreen(
             Text(
                 text = stringResource(R.string.blocked_title),
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                color = Color.White,
                 textAlign = TextAlign.Center
             )
 
@@ -83,7 +85,7 @@ fun StartBlockedUserScreen(
                 text = user.username,
                 style = MaterialTheme.typography.displaySmall,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = Color.White,
                 textAlign = TextAlign.Center
             )
 
@@ -168,7 +170,7 @@ private fun BlockedActionItem(
             Text(
                 text = label,
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                color = Color.White,
                 textAlign = TextAlign.Center
             )
         }

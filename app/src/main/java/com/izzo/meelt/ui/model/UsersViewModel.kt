@@ -57,14 +57,12 @@ class UsersViewModel : ViewModel() {
 
             val selectedUsersJsonName = dataService.loadSelectedUsersFromPreferences(context)
             val users = dataService.getAllUsers()
-            val preloadedMessages = dataService.getAllMessages()
             val currentUserUid = Firebase.auth.currentUser?.uid.orEmpty()
             val availableUsersJsonNames = dataService.getAvailableUsersJsonNames()
 
-            _uiState.update {
-                it.copy(
+            _uiState.update { current ->
+                current.copy(
                     users = users,
-                    messages = preloadedMessages,
                     authenticatedUserUid = currentUserUid,
                     availableUsersJsonNames = availableUsersJsonNames,
                     selectedUsersJsonName = selectedUsersJsonName,
@@ -72,7 +70,8 @@ class UsersViewModel : ViewModel() {
                 )
             }
 
-            replaceDatabaseMessagesWith(preloadedMessages)
+            // On app start, never override chat history with seed messages.
+            startMessagesListener()
         }
     }
 

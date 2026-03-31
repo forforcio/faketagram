@@ -3,7 +3,7 @@ package com.izzo.meelt.ui.nav
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,12 +19,16 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,6 +49,7 @@ import com.izzo.meelt.data.model.User
 fun StartChatScreen(
     uiState: UsersUiState,
     onUserClick: (User) -> Unit,
+    onBlockUser: (User) -> Unit,
     modifier: Modifier
 ) {
     val chats: List<Chat> = remember(uiState) {
@@ -55,7 +60,7 @@ fun StartChatScreen(
         modifier = modifier.fillMaxSize(),
         topBar = {
             Column(
-                modifier = Modifier.padding(horizontal = 15.dp),
+                modifier = Modifier,
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 Box(
@@ -63,7 +68,7 @@ fun StartChatScreen(
                         .fillMaxWidth()
                         .height(110.dp)
                         .background(
-                            Color.Transparent
+                            MaterialTheme.colorScheme.primary
                         )
                         .padding(top = 25.dp)
                 ) {
@@ -75,7 +80,9 @@ fun StartChatScreen(
                             .align(Alignment.BottomCenter),
                     )
                 }
-                Box {
+                Box (
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp)
+                ) {
                     Row {
                         Image(
                             painter = painterResource(
@@ -98,7 +105,7 @@ fun StartChatScreen(
                                 ?: stringResource(R.string.chat_user_not_found),
                             style = MaterialTheme.typography.titleMedium.copy(
                                 fontWeight = FontWeight.ExtraBold,
-                                color = Color.Black
+                                color = Color.White
                             ),
                             modifier = Modifier
                                 .padding(horizontal = 15.dp)
@@ -107,29 +114,11 @@ fun StartChatScreen(
                     }
 
                 }
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(12.dp))
-                        .fillMaxWidth()
-                        .height(40.dp)
-                        .background(
-                            MaterialTheme.colorScheme.surface
-                        )
-                        .padding(10.dp)
-                ) {
-                    Text(
-                        text = stringResource(R.string.common_search),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Gray,
-                        modifier = Modifier
-                            .align(Alignment.CenterStart),
-                    )
-                }
                 Text(
                     text = stringResource(R.string.chat_title_messages),
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontWeight = FontWeight.ExtraBold,
-                        color = Color.Black
+                        color = Color.White
                     ),
                     modifier = Modifier
                         .padding(horizontal = 15.dp)
@@ -152,6 +141,9 @@ fun StartChatScreen(
                     onClick = {
                         onUserClick(chat.interlocutor)
                     },
+                    onBlockClick = {
+                        onBlockUser(chat.interlocutor)
+                    },
                     lastMessage = lastMessageText(chat),
                     messagesUnread = chat.getPendingMessagesCount()
                 )
@@ -163,22 +155,23 @@ fun StartChatScreen(
 @Composable
 fun lastMessageText(chat: Chat): String {
     val lastMessage = chat.getLastMessage()
-    if (lastMessage == null) {
-        return stringResource(R.string.chat_no_messages_yet)
+    return when {
+        lastMessage == null -> stringResource(R.string.chat_no_messages_yet)
+        !lastMessage.imageUrl.isNullOrBlank() -> stringResource(R.string.chat_message_image)
+        else -> lastMessage.text ?: ""
     }
-    if (!lastMessage.imageUrl.isNullOrBlank()) {
-        return stringResource(R.string.chat_message_image)
-    }
-    else return lastMessage.text ?: ""
 }
 
 @Composable
 fun ChatView(
     user: User,
     onClick: () -> Unit,
+    onBlockClick: () -> Unit,
     lastMessage: String,
     messagesUnread: Int
 ) {
+    var menuExpanded by remember { mutableStateOf(false) }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -186,10 +179,12 @@ fun ChatView(
                 vertical = 0.dp,
                 horizontal = 20.dp
             )
-            .clickable(
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = { menuExpanded = true },
                 indication = null,
                 interactionSource = remember { MutableInteractionSource() }
-            ) { onClick() },
+            ),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -215,7 +210,7 @@ fun ChatView(
                         text = user.username,
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.ExtraBold,
-                            color = Color.Black
+                            color = Color.White
                         ),
                         fontSize = 17.sp,
                         modifier = Modifier.padding(bottom = 6.dp)
@@ -223,7 +218,7 @@ fun ChatView(
                     Text(
                         text = lastMessage,
                         style = MaterialTheme.typography.bodySmall.copy(
-                            color = Color.Black,
+                            color = Color.White,
                             fontWeight = if (messagesUnread > 0) {
                                 FontWeight.ExtraBold
                             } else FontWeight.Normal,
@@ -252,6 +247,19 @@ fun ChatView(
                     )
                 }
             }
+        }
+
+        DropdownMenu(
+            expanded = menuExpanded,
+            onDismissRequest = { menuExpanded = false }
+        ) {
+            DropdownMenuItem(
+                text = { Text(text = stringResource(R.string.profile_action_block)) },
+                onClick = {
+                    menuExpanded = false
+                    onBlockClick()
+                }
+            )
         }
     }
 }
