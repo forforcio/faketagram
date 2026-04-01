@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -34,6 +35,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -49,7 +51,10 @@ fun StartUserProfileScreen(
     modifier: Modifier = Modifier,
     onChatClick: (User) -> Unit,
     onBlockClick: (User) -> Unit,
+    showBottomActions: Boolean = true,
 ) {
+    val maxPhotoHeight = LocalConfiguration.current.screenHeightDp.dp * 0.72f
+
     val photos = buildList {
         add(user.resId)
         addAll(user.galleryResIds)
@@ -63,7 +68,7 @@ fun StartUserProfileScreen(
                     .fillMaxWidth()
                     .height(110.dp)
                     .background(
-                        Color.Transparent
+                        MaterialTheme.colorScheme.primary
                     )
                     .padding(top = 25.dp)
             ) {
@@ -77,34 +82,36 @@ fun StartUserProfileScreen(
             }
         }
     ) { innerPadding ->
-        LazyColumn(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(
-                start = 20.dp,
-                top = 20.dp,
-                end = 20.dp,
-                bottom = 130.dp
-            )
+                .padding(innerPadding)
         ) {
-            itemsIndexed(photos) { index, photoResId ->
-                ProfilePhotoCard(
-                    photoResId = photoResId,
-                    overlay = {
-                        when {
-                            index == 0 -> MainProfileOverlay(user = user)
-                            index == 1 -> AboutMeOverlay(bio = user.bio)
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                contentPadding = PaddingValues(
+                    bottom = if (showBottomActions) 130.dp else 24.dp
+                )
+            ) {
+                itemsIndexed(photos) { index, photoResId ->
+                    ProfilePhotoCard(
+                        photoResId = photoResId,
+                        maxPhotoHeight = maxPhotoHeight,
+                        overlay = {
+                            when {
+                                index == 0 -> MainProfileOverlay(user = user)
+                                index == 1 -> AboutMeOverlay(bio = user.bio)
+                            }
                         }
+                    )
+                }
+            }
 
-                        if (index == photos.lastIndex) {
-                            BottomActionsOverlay(
-                                onChatClick = { onChatClick(user) },
-                                onBlockClick = { onBlockClick(user) }
-                            )
-                        }
-                    }
+            if (showBottomActions) {
+                BottomActionsOverlay(
+                    onChatClick = { onChatClick(user) },
+                    onBlockClick = { onBlockClick(user) }
                 )
             }
         }
@@ -114,19 +121,20 @@ fun StartUserProfileScreen(
 @Composable
 private fun ProfilePhotoCard(
     photoResId: Int,
+    maxPhotoHeight: androidx.compose.ui.unit.Dp,
     overlay: @Composable BoxScope.() -> Unit,
 ) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(24.dp))
+            .heightIn(max = maxPhotoHeight)
     ) {
         Image(
             painter = painterResource(photoResId),
             contentDescription = stringResource(R.string.content_desc_profile_photo),
             modifier = Modifier
-                .fillMaxWidth(),
-            contentScale = ContentScale.FillWidth
+                .fillMaxSize(),
+            contentScale = ContentScale.Crop
         )
 
         Box(
@@ -201,7 +209,7 @@ private fun BoxScope.BottomActionsOverlay(
     Row(
         modifier = Modifier
             .align(Alignment.BottomCenter)
-            .padding(20.dp)
+            .padding(start = 20.dp, end = 20.dp, bottom = 52.dp)
             .fillMaxWidth()
             .background(
                 color = Color.White.copy(alpha = 0.28f),

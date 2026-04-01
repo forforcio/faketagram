@@ -14,6 +14,7 @@ enum class Screen(
 ) {
     HOME(icon = Icons.Default.Home),
     CHAT(iconRes = R.drawable.chats_icon),
+    TOOLS(iconRes = R.drawable.nav_tools_shape),
     PROFILE(icon = Icons.Default.AccountCircle)
 }
 
