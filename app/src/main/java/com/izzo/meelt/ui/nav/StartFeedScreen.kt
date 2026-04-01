@@ -34,6 +34,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.izzo.meelt.ui.components.UserImage
 
 
 @Composable
@@ -115,8 +116,8 @@ fun SocialPostCard(
             .padding(vertical=10.dp)
             .fillMaxWidth()
     ) {
-        Image(
-            painter = painterResource(user.resId),
+        UserImage(
+            user = user,
             contentDescription = stringResource(R.string.content_desc_user_photo),
             modifier = Modifier
                 .fillMaxWidth()

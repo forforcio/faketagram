@@ -58,7 +58,7 @@ class UsersViewModel : ViewModel() {
             val selectedUsersJsonName = dataService.loadSelectedUsersFromPreferences(context)
             val users = dataService.getAllUsers()
             val currentUserUid = Firebase.auth.currentUser?.uid.orEmpty()
-            val availableUsersJsonNames = dataService.getAvailableUsersJsonNames()
+            val availableUsersJsonNames = dataService.getAvailableUsersJsonNames(context)
 
             _uiState.update { current ->
                 current.copy(
@@ -86,7 +86,7 @@ class UsersViewModel : ViewModel() {
             val users = dataService.getAllUsers()
             val preloadedMessages = dataService.getAllMessages()
             val currentUserUid = Firebase.auth.currentUser?.uid.orEmpty()
-            val availableUsersJsonNames = dataService.getAvailableUsersJsonNames()
+            val availableUsersJsonNames = dataService.getAvailableUsersJsonNames(context)
 
             _uiState.update {
                 it.copy(

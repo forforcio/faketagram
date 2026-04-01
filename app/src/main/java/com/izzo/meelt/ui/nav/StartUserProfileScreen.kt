@@ -41,6 +41,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.izzo.meelt.R
 import com.izzo.meelt.data.model.User
 import java.util.Locale
@@ -55,10 +56,17 @@ fun StartUserProfileScreen(
 ) {
     val maxPhotoHeight = LocalConfiguration.current.screenHeightDp.dp * 0.72f
 
-    val photos = buildList {
-        add(user.resId)
-        addAll(user.galleryResIds)
-    }.distinct().filter { it != 0 }
+    val photos = buildList<ProfilePhotoSource> {
+        user.resAssetPath?.let { add(ProfilePhotoSource.Asset(it)) }
+            ?: add(ProfilePhotoSource.Drawable(user.resId))
+
+        user.galleryResIds
+            .filter { it != 0 }
+            .forEach { add(ProfilePhotoSource.Drawable(it)) }
+
+        user.galleryResAssetPaths
+            .forEach { add(ProfilePhotoSource.Asset(it)) }
+    }.distinct()
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -94,9 +102,9 @@ fun StartUserProfileScreen(
                     bottom = if (showBottomActions) 130.dp else 24.dp
                 )
             ) {
-                itemsIndexed(photos) { index, photoResId ->
+                itemsIndexed(photos) { index, photo ->
                     ProfilePhotoCard(
-                        photoResId = photoResId,
+                        photo = photo,
                         maxPhotoHeight = maxPhotoHeight,
                         overlay = {
                             when {
@@ -120,7 +128,7 @@ fun StartUserProfileScreen(
 
 @Composable
 private fun ProfilePhotoCard(
-    photoResId: Int,
+    photo: ProfilePhotoSource,
     maxPhotoHeight: androidx.compose.ui.unit.Dp,
     overlay: @Composable BoxScope.() -> Unit,
 ) {
@@ -129,13 +137,20 @@ private fun ProfilePhotoCard(
             .fillMaxWidth()
             .heightIn(max = maxPhotoHeight)
     ) {
-        Image(
-            painter = painterResource(photoResId),
-            contentDescription = stringResource(R.string.content_desc_profile_photo),
-            modifier = Modifier
-                .fillMaxSize(),
-            contentScale = ContentScale.Crop
-        )
+        when (photo) {
+            is ProfilePhotoSource.Asset -> AsyncImage(
+                model = "file:///android_asset/${photo.path}",
+                contentDescription = stringResource(R.string.content_desc_profile_photo),
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+            is ProfilePhotoSource.Drawable -> Image(
+                painter = painterResource(photo.resId),
+                contentDescription = stringResource(R.string.content_desc_profile_photo),
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+        }
 
         Box(
             modifier = Modifier
@@ -260,7 +275,11 @@ private fun ProfileActionIcon(
     }
 }
 
+private sealed interface ProfilePhotoSource {
+    data class Drawable(val resId: Int) : ProfilePhotoSource
+    data class Asset(val path: String) : ProfilePhotoSource
+}
+
 private fun formatDistanceKm(distance: Double): String {
     return String.format(Locale.US, "%.1f", distance)
 }
-

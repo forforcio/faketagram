@@ -1,6 +1,7 @@
 package com.izzo.meelt.data.service
 
 import android.content.Context
+import java.io.IOException
 
 class ResourcesService(var context: Context) {
 
@@ -31,4 +32,25 @@ class ResourcesService(var context: Context) {
             .bufferedReader(Charsets.UTF_8)
             .use { it.readText() }
     }
+
+    fun getJsonTextFromAssetOrNull(assetPath: String): String? {
+        return try {
+            context.assets.open(assetPath)
+                .bufferedReader(Charsets.UTF_8)
+                .use { it.readText() }
+        } catch (_: IOException) {
+            null
+        }
+    }
+
+    fun assetExists(assetPath: String): Boolean {
+        return try {
+            context.assets.open(assetPath).use { }
+            true
+        } catch (_: IOException) {
+            false
+        }
+    }
+
+    fun toAssetUri(assetPath: String): String = "file:///android_asset/$assetPath"
 }

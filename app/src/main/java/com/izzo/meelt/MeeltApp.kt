@@ -36,8 +36,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.izzo.meelt.data.model.Chat
+import com.izzo.meelt.data.model.User
 import com.izzo.meelt.data.service.DataManagementService
 import com.izzo.meelt.data.service.ResourcesService
+import com.izzo.meelt.ui.components.UserImage
 import com.izzo.meelt.ui.nav.StartBlockedUserScreen
 import com.izzo.meelt.ui.nav.StartChatScreen
 import com.izzo.meelt.ui.nav.StartFeedScreen
@@ -242,8 +244,7 @@ fun MeeltApp(
             ) {
                 EditableBottomBar(
                     selectedRoute = route,
-                    profileImageRes = uiState.getCurrentUserProfilePicture()
-                        ?: R.drawable.default_user,
+                    profileUser = uiState.getAuthenticatedUser(),
                     onScreenSelected = { screen ->
                         when (screen) {
                             Screen.HOME -> {
@@ -286,7 +287,7 @@ fun MeeltApp(
 @Composable
 private fun EditableBottomBar(
     selectedRoute: String?,
-    profileImageRes: Int,
+    profileUser: User?,
     onScreenSelected: (Screen) -> Unit
 ) {
     val navIconsColor = MaterialTheme.colorScheme.tertiary
@@ -304,19 +305,35 @@ private fun EditableBottomBar(
                 onClick = { onScreenSelected(screen) },
                 icon = {
                     if (screen == Screen.PROFILE) {
-                        Image(
-                            painter = painterResource(profileImageRes),
-                            contentDescription = stringResource(R.string.content_desc_user_photo),
-                            modifier = Modifier
-                                .clip(CircleShape)
-                                .requiredSize(navIconSize)
-                                .border(
-                                    width = 2.dp,
-                                    color = navIconsColor,
-                                    shape = CircleShape
-                                ),
-                            contentScale = ContentScale.Crop
-                        )
+                        if (profileUser != null) {
+                            UserImage(
+                                user = profileUser,
+                                contentDescription = stringResource(R.string.content_desc_user_photo),
+                                modifier = Modifier
+                                    .clip(CircleShape)
+                                    .requiredSize(navIconSize)
+                                    .border(
+                                        width = 2.dp,
+                                        color = navIconsColor,
+                                        shape = CircleShape
+                                    ),
+                                contentScale = ContentScale.Crop
+                            )
+                        } else {
+                            Image(
+                                painter = painterResource(R.drawable.default_user),
+                                contentDescription = stringResource(R.string.content_desc_user_photo),
+                                modifier = Modifier
+                                    .clip(CircleShape)
+                                    .requiredSize(navIconSize)
+                                    .border(
+                                        width = 2.dp,
+                                        color = navIconsColor,
+                                        shape = CircleShape
+                                    ),
+                                contentScale = ContentScale.Crop
+                            )
+                        }
                     } else {
                         val contentDescription = when (screen) {
                             Screen.HOME -> stringResource(R.string.nav_home)

@@ -44,6 +44,7 @@ import com.izzo.meelt.R
 import com.izzo.meelt.data.UsersUiState
 import com.izzo.meelt.data.model.Chat
 import com.izzo.meelt.data.model.User
+import com.izzo.meelt.ui.components.UserImage
 
 @Composable
 fun StartChatScreen(
@@ -55,6 +56,7 @@ fun StartChatScreen(
     val chats: List<Chat> = remember(uiState) {
         uiState.getChatsOrdered()
     }
+    val currentUser = uiState.getAuthenticatedUser()
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -84,22 +86,35 @@ fun StartChatScreen(
                     modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp)
                 ) {
                     Row {
-                        Image(
-                            painter = painterResource(
-                                uiState.getCurrentUserProfilePicture()
-                                    ?: R.drawable.default_user
-                            ),
-                            contentDescription = stringResource(R.string.content_desc_user_photo),
-                            modifier = Modifier
-                                .clip(CircleShape)
-                                .requiredSize(28.dp)
-                                .border(
-                                    width = 2.dp,
-                                    color = MaterialTheme.colorScheme.secondary,
-                                    shape = CircleShape
-                                ),
-                            contentScale = ContentScale.Crop
-                        )
+                        if (currentUser != null) {
+                            UserImage(
+                                user = currentUser,
+                                contentDescription = stringResource(R.string.content_desc_user_photo),
+                                modifier = Modifier
+                                    .clip(CircleShape)
+                                    .requiredSize(28.dp)
+                                    .border(
+                                        width = 2.dp,
+                                        color = MaterialTheme.colorScheme.secondary,
+                                        shape = CircleShape
+                                    ),
+                                contentScale = ContentScale.Crop
+                            )
+                        } else {
+                            Image(
+                                painter = painterResource(R.drawable.default_user),
+                                contentDescription = stringResource(R.string.content_desc_user_photo),
+                                modifier = Modifier
+                                    .clip(CircleShape)
+                                    .requiredSize(28.dp)
+                                    .border(
+                                        width = 2.dp,
+                                        color = MaterialTheme.colorScheme.secondary,
+                                        shape = CircleShape
+                                    ),
+                                contentScale = ContentScale.Crop
+                            )
+                        }
                         Text(
                             text = uiState.getAuthenticatedUser()?.username
                                 ?: stringResource(R.string.chat_user_not_found),
@@ -192,8 +207,8 @@ fun ChatView(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Row {
-                Image(
-                    painter = painterResource(user.resId),
+                UserImage(
+                    user = user,
                     contentDescription = stringResource(R.string.content_desc_user_photo),
                     modifier = Modifier
                         .size(50.dp)

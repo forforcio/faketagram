@@ -18,5 +18,9 @@ data class User (
     var resId: Int = 0,
     @Transient
     val galleryResIds: List<Int> = emptyList(),
+    @Transient
+    val resAssetPath: String? = null,
+    @Transient
+    val galleryResAssetPaths: List<String> = emptyList(),
 ) {
 }
