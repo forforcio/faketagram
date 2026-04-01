@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.runtime.Composable
@@ -288,13 +289,13 @@ private fun EditableBottomBar(
     profileImageRes: Int,
     onScreenSelected: (Screen) -> Unit
 ) {
-    val navIconsColor = Color(0xFFA31419)
-    val navIconSize = 24.dp
+    val navIconsColor = MaterialTheme.colorScheme.tertiary
+    val navIconSize = 44.dp
 
     NavigationBar(
         containerColor = Color.White.copy(alpha = 0.6f),
         modifier = Modifier
-            .height(90.dp)
+            .height(105.dp)
             .padding(0.dp)
     ) {
         Screen.entries.forEach { screen ->
