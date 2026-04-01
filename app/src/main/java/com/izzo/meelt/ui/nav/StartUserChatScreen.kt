@@ -152,25 +152,25 @@ fun StartUserChatScreen(
                         }
                     }
                 }
-                Box(
-                    modifier = Modifier
-                        .padding(15.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .fillMaxWidth()
-                        .height(40.dp)
-                        .background(
-                            MaterialTheme.colorScheme.surface
-                        )
-                        .padding(horizontal = 10.dp)
-                ) {
-                    Text(
-                        text = stringResource(R.string.common_search),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Gray,
-                        modifier = Modifier
-                            .align(Alignment.CenterStart),
-                    )
-                }
+//                Box(
+//                    modifier = Modifier
+//                        .padding(15.dp)
+//                        .clip(RoundedCornerShape(12.dp))
+//                        .fillMaxWidth()
+//                        .height(40.dp)
+//                        .background(
+//                            MaterialTheme.colorScheme.surface
+//                        )
+//                        .padding(horizontal = 10.dp)
+//                ) {
+//                    Text(
+//                        text = stringResource(R.string.common_search),
+//                        style = MaterialTheme.typography.bodyMedium,
+//                        color = Color.Gray,
+//                        modifier = Modifier
+//                            .align(Alignment.CenterStart),
+//                    )
+//                }
             }
         },
         bottomBar = {

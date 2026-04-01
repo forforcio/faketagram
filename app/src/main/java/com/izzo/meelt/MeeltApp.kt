@@ -291,12 +291,12 @@ private fun EditableBottomBar(
     onScreenSelected: (Screen) -> Unit
 ) {
     val navIconsColor = MaterialTheme.colorScheme.tertiary
-    val navIconSize = 44.dp
+    val navIconSize = 40.dp
 
     NavigationBar(
         containerColor = Color.White.copy(alpha = 0.6f),
         modifier = Modifier
-            .height(105.dp)
+            .height(90.dp)
             .padding(0.dp)
     ) {
         Screen.entries.forEach { screen ->
