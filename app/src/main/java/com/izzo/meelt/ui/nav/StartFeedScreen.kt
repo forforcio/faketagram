@@ -32,6 +32,8 @@ import com.izzo.meelt.data.UsersUiState
 import com.izzo.meelt.data.model.User
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 
 
 @Composable
@@ -125,10 +127,14 @@ fun SocialPostCard(
                 ) { onClick() },
             contentScale = ContentScale.Crop
         )
-        Column(modifier = Modifier.padding(18.dp)) {
+        Column(modifier = Modifier.padding(28.dp)) {
             Text(
                 text = stringResource(R.string.common_user_name_age, user.username, user.age),
-                style = MaterialTheme.typography.bodyLarge,
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    fontWeight = FontWeight.Light,
+                    color = Color.White,
+                    fontSize = 34.sp
+                ),
                 color = Color.White,
             )
         }
