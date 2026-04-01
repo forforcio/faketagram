@@ -173,14 +173,15 @@ class UsersViewModel : ViewModel() {
 
                     val senderName = sender
                         ?.username
-                        ?: appContext?.getString(R.string.notification_sender_fallback)
-                        ?: "Nuevo mensaje"
+                        ?: appContext?.getString(R.string.notification_sender_fallback).orEmpty()
 
                     val preview = when {
                         !message.text.isNullOrBlank() -> message.text
                         !message.imageUrl.isNullOrBlank() -> appContext?.getString(R.string.notification_photo_preview)
                         else -> appContext?.getString(R.string.notification_new_message_preview)
-                    } ?: "Tienes un nuevo mensaje"
+                    }.orEmpty()
+
+                    if (senderName.isBlank() || preview.isBlank()) return@forEach
 
                     appContext?.let { context ->
                         ChatNotificationHelper.showIncomingMessage(
@@ -239,7 +240,7 @@ class UsersViewModel : ViewModel() {
                         error = appContext?.getString(
                             R.string.chat_error_send_message,
                             exception.message.orEmpty()
-                        ) ?: "Error al enviar: ${exception.message}"
+                        ) ?: exception.message.orEmpty()
                     )
                 }
                 startMessagesListener()
@@ -277,7 +278,7 @@ class UsersViewModel : ViewModel() {
             _uiState.update {
                 it.copy(
                     error = appContext?.getString(R.string.chat_error_sender_receiver_unresolved)
-                        ?: "Unable to resolve sender or receiver"
+                        ?: ""
                 )
             }
             return
@@ -318,7 +319,7 @@ class UsersViewModel : ViewModel() {
                         error = appContext?.getString(
                             R.string.chat_error_send_message,
                             exception.message.orEmpty()
-                        ) ?: "Error al enviar: ${exception.message}"
+                        ) ?: exception.message.orEmpty()
                     )
                 }
             }
@@ -359,7 +360,7 @@ class UsersViewModel : ViewModel() {
                             error = appContext?.getString(
                                 R.string.chat_error_send_message,
                                 e.message.orEmpty()
-                            ) ?: "Error deleting image: ${e.message}"
+                            ) ?: e.message.orEmpty()
                         )
                     }
                 }
@@ -383,7 +384,7 @@ class UsersViewModel : ViewModel() {
                             error = appContext?.getString(
                                 R.string.chat_error_send_message,
                                 e.message.orEmpty()
-                            ) ?: "Error deleting message: ${e.message}"
+                            ) ?: e.message.orEmpty()
                         )
                     }
                 }
@@ -427,7 +428,7 @@ class UsersViewModel : ViewModel() {
                                             error = appContext?.getString(
                                                 R.string.chat_error_send_message,
                                                 e.message.orEmpty()
-                                            ) ?: "Error deleting message: ${e.message}"
+                                            ) ?: e.message.orEmpty()
                                         )
                                     }
                                 }

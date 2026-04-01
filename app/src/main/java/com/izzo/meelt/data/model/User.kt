@@ -6,11 +6,11 @@ import kotlinx.serialization.Transient
 @Serializable
 data class User (
     val userId: Int,
-    val username: String = "default user",
-    val firebaseUid: String = "zero",
+    val username: String = "",
+    val firebaseUid: String = "",
     val age: Int = 0,
     val distance: Double = 0.0,
-    val bio: String = "this is default user's bio",
+    val bio: String = "",
     val resName: String = "default_user",
     val galleryResName: List<String> = emptyList(),
     val isBlocked: Boolean = false,
