@@ -1,7 +1,7 @@
 package com.izzo.meelt.data.service
 
 import android.content.Context
-import com.izzo.meelt.R
+import androidx.core.content.edit
 import com.izzo.meelt.data.model.AppDataset
 import com.izzo.meelt.data.model.Message
 import com.izzo.meelt.data.model.User
@@ -15,7 +15,7 @@ class DataManagementService {
     var usersResourceId: Int = 0
 
     fun getAvailableUsersJsonNames(appContext: Context): List<String> {
-        val feedNames = appContext.assets
+        return appContext.assets
             .list(FEEDS_ASSETS_DIR)
             .orEmpty()
             .filter { feedName ->
@@ -25,22 +25,12 @@ class DataManagementService {
                     .contains(USERS_JSON_FILE_NAME)
             }
             .sorted()
-
-        return if (feedNames.isNotEmpty()) {
-            feedNames
-        } else {
-            val discoveredRawNames = R.raw::class.java.fields
-                .mapNotNull { field ->
-                    field.name.takeIf { it.matches(USERS_JSON_NAME_REGEX) }
-                }
-                .sortedBy(::extractUsersJsonIndex)
-
-            if (discoveredRawNames.isNotEmpty()) discoveredRawNames else listOf(DEFAULT_USERS_JSON_NAME)
-        }
     }
 
     fun getSelectedUsersJsonName(appContext: Context): String {
         val availableJsonNames = getAvailableUsersJsonNames(appContext)
+        if (availableJsonNames.isEmpty()) return ""
+
         val savedJsonName = getPreferences(appContext)
             .getString(PREFERENCE_SELECTED_USERS_JSON_NAME, null)
 
@@ -52,6 +42,12 @@ class DataManagementService {
     context(resources: ResourcesService)
     fun loadSelectedUsersFromPreferences(appContext: Context): String {
         val selectedJsonName = getSelectedUsersJsonName(appContext)
+        if (selectedJsonName.isBlank()) {
+            users = emptyList()
+            messages = emptyList()
+            usersResourceId = 0
+            return ""
+        }
         loadUsersByJsonName(selectedJsonName)
         return selectedJsonName
     }
@@ -59,14 +55,24 @@ class DataManagementService {
     context(resources: ResourcesService)
     fun selectUsersJson(appContext: Context, jsonName: String): String {
         val availableJsonNames = getAvailableUsersJsonNames(appContext)
+        if (availableJsonNames.isEmpty()) {
+            users = emptyList()
+            messages = emptyList()
+            usersResourceId = 0
+            getPreferences(appContext)
+                .edit()
+                .remove(PREFERENCE_SELECTED_USERS_JSON_NAME)
+                .apply()
+            return ""
+        }
+
         val selectedJsonName = jsonName
             .takeIf { it in availableJsonNames }
             ?: availableJsonNames.first()
 
-        getPreferences(appContext)
-            .edit()
-            .putString(PREFERENCE_SELECTED_USERS_JSON_NAME, selectedJsonName)
-            .apply()
+        getPreferences(appContext).edit {
+            putString(PREFERENCE_SELECTED_USERS_JSON_NAME, selectedJsonName)
+        }
 
         loadUsersByJsonName(selectedJsonName)
         return selectedJsonName
@@ -102,13 +108,9 @@ class DataManagementService {
             return
         }
 
-        val resId = resources.context.resources.getIdentifier(
-            jsonName,
-            "raw",
-            resources.context.packageName
-        ).takeIf { it != 0 } ?: R.raw.users_1
-
-        getUsersFromJson(resId)
+        users = emptyList()
+        messages = emptyList()
+        usersResourceId = 0
     }
 
     context(resources: ResourcesService)
@@ -147,12 +149,6 @@ class DataManagementService {
             Context.MODE_PRIVATE
         )
 
-    private fun extractUsersJsonIndex(jsonName: String): Int {
-        return jsonName.substringAfter(USERS_JSON_NAME_PREFIX)
-            .toIntOrNull()
-            ?: Int.MAX_VALUE
-    }
-
     private fun decodeDataset(json: Json, jsonString: String): AppDataset {
         return runCatching {
             json.decodeFromString<AppDataset>(jsonString)
@@ -167,10 +163,7 @@ class DataManagementService {
     private companion object {
         private const val PREFERENCES_NAME = "data_management_preferences"
         private const val PREFERENCE_SELECTED_USERS_JSON_NAME = "selected_users_json_name"
-        private const val DEFAULT_USERS_JSON_NAME = "users_1"
-        private const val USERS_JSON_NAME_PREFIX = "users_"
         private const val FEEDS_ASSETS_DIR = "feeds"
         private const val USERS_JSON_FILE_NAME = "users.json"
-        private val USERS_JSON_NAME_REGEX = Regex("""users_\d+""")
     }
 }
