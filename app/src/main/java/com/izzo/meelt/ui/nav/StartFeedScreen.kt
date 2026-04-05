@@ -34,8 +34,6 @@ import com.izzo.meelt.data.UsersUiState
 import com.izzo.meelt.data.model.User
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
 import com.izzo.meelt.ui.components.UserImage
 
 
