@@ -41,8 +41,8 @@ fun StartProfileScreen(
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
     val selectedUsersJsonLabel = when {
-        selectedUsersJsonName.isNotBlank() -> "${selectedUsersJsonName}.json"
-        availableUsersJsonNames.isNotEmpty() -> "${availableUsersJsonNames.first()}.json"
+        selectedUsersJsonName.isNotBlank() -> selectedUsersJsonName
+        availableUsersJsonNames.isNotEmpty() -> availableUsersJsonNames.first()
         else -> stringResource(R.string.profile_users_json_none)
     }
 
@@ -52,14 +52,14 @@ fun StartProfileScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(110.dp)
+                    .height(70.dp)
                     .background(
                         Color.Transparent
                     )
                     .padding(top = 25.dp)
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.meelt_logo),
+                    painter = painterResource(id = R.drawable.meelt_logo_small),
                     contentDescription = stringResource(R.string.content_desc_app_logo),
                     modifier = Modifier
                         .fillMaxSize()
@@ -105,9 +105,9 @@ fun StartProfileScreen(
                             text = {
                                 Text(
                                     text = if (jsonName == selectedUsersJsonName) {
-                                        "✓ ${jsonName}.json"
+                                        "✓ $jsonName"
                                     } else {
-                                        "${jsonName}.json"
+                                        jsonName
                                     }
                                 )
                             },

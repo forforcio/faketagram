@@ -26,12 +26,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.izzo.meelt.R
 import com.izzo.meelt.data.UsersUiState
 import com.izzo.meelt.data.model.User
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.graphics.Color
+import com.izzo.meelt.ui.components.UserImage
 
 
 @Composable
@@ -113,8 +116,8 @@ fun SocialPostCard(
             .padding(vertical=10.dp)
             .fillMaxWidth()
     ) {
-        Image(
-            painter = painterResource(user.resId),
+        UserImage(
+            user = user,
             contentDescription = stringResource(R.string.content_desc_user_photo),
             modifier = Modifier
                 .fillMaxWidth()
@@ -125,10 +128,14 @@ fun SocialPostCard(
                 ) { onClick() },
             contentScale = ContentScale.Crop
         )
-        Column(modifier = Modifier.padding(18.dp)) {
+        Column(modifier = Modifier.padding(28.dp)) {
             Text(
                 text = stringResource(R.string.common_user_name_age, user.username, user.age),
-                style = MaterialTheme.typography.bodyLarge,
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    fontWeight = FontWeight.Light,
+                    color = Color.White,
+                    fontSize = 34.sp
+                ),
                 color = Color.White,
             )
         }

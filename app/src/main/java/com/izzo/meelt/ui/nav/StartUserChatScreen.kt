@@ -65,6 +65,7 @@ import com.izzo.meelt.data.UsersUiState
 import com.izzo.meelt.data.model.Chat
 import com.izzo.meelt.data.model.Message
 import com.izzo.meelt.data.model.User
+import com.izzo.meelt.ui.components.UserImage
 import com.izzo.meelt.ui.model.UsersViewModel
 import java.io.File
 
@@ -124,8 +125,8 @@ fun StartUserChatScreen(
                             contentDescription = stringResource(R.string.chat_back_icon),
                             tint = Color.White
                         )
-                        Image(
-                            painter = painterResource(chat.interlocutor.resId),
+                        UserImage(
+                            user = chat.interlocutor,
                             contentDescription = stringResource(R.string.content_desc_user_photo),
                             modifier = Modifier
                                 .padding(horizontal = 10.dp)
@@ -151,25 +152,25 @@ fun StartUserChatScreen(
                         }
                     }
                 }
-                Box(
-                    modifier = Modifier
-                        .padding(15.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .fillMaxWidth()
-                        .height(40.dp)
-                        .background(
-                            MaterialTheme.colorScheme.surface
-                        )
-                        .padding(horizontal = 10.dp)
-                ) {
-                    Text(
-                        text = stringResource(R.string.common_search),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Gray,
-                        modifier = Modifier
-                            .align(Alignment.CenterStart),
-                    )
-                }
+//                Box(
+//                    modifier = Modifier
+//                        .padding(15.dp)
+//                        .clip(RoundedCornerShape(12.dp))
+//                        .fillMaxWidth()
+//                        .height(40.dp)
+//                        .background(
+//                            MaterialTheme.colorScheme.surface
+//                        )
+//                        .padding(horizontal = 10.dp)
+//                ) {
+//                    Text(
+//                        text = stringResource(R.string.common_search),
+//                        style = MaterialTheme.typography.bodyMedium,
+//                        color = Color.Gray,
+//                        modifier = Modifier
+//                            .align(Alignment.CenterStart),
+//                    )
+//                }
             }
         },
         bottomBar = {
@@ -304,8 +305,8 @@ fun MessageDisplay(
         verticalAlignment = Alignment.Top
     ) {
         if (isReceived) {
-            Image(
-                painter = painterResource(user.resId),
+            UserImage(
+                user = user,
                 contentDescription = stringResource(R.string.content_desc_user_photo),
                 modifier = Modifier
                     .clip(CircleShape)
@@ -341,8 +342,8 @@ fun MessageDisplay(
                     deleteMessage = deleteMessage
                 )
             }
-            Image(
-                painter = painterResource(user.resId),
+            UserImage(
+                user = user,
                 contentDescription = stringResource(R.string.content_desc_user_photo),
                 modifier = Modifier
                     .clip(CircleShape)
@@ -419,4 +420,3 @@ private fun MessageBubble(
         }
     }
 }
-

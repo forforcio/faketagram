@@ -30,16 +30,16 @@ data class UsersUiState(
         return currentUser?.resId
     }
 
-    fun getUserById(userId: Int): User {
+    fun getUserById(userId: Int, context: Context? = null): User {
         val user = users.find { it.userId == userId }
         if (user == null) {
             return User(
                 userId = 0,
-                username = "Usuario no encontrado",
+                username = context?.getString(R.string.fallback_user_name).orEmpty(),
                 age = 0,
                 distance = 0.0,
-                bio = "Este usuario no existe",
-                resName = "wenaso_1",
+                bio = context?.getString(R.string.fallback_user_bio).orEmpty(),
+                resName = "default_user",
             )
         }
         return user
@@ -54,10 +54,10 @@ data class UsersUiState(
         if (user == null) {
             return User(
                 userId = 0,
-                username = context?.getString(R.string.fallback_user_name) ?: "Usuario no encontrado",
+                username = context?.getString(R.string.fallback_user_name).orEmpty(),
                 age = 0,
                 distance = 0.0,
-                bio = context?.getString(R.string.fallback_user_bio) ?: "Este usuario no existe",
+                bio = context?.getString(R.string.fallback_user_bio).orEmpty(),
                 resName = "default_user",
             )
         }

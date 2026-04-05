@@ -35,8 +35,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.izzo.meelt.R
 import com.izzo.meelt.data.model.User
+import com.izzo.meelt.ui.components.UserImage
 
 @Composable
 fun StartBlockedUserScreen(
@@ -50,12 +52,12 @@ fun StartBlockedUserScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(110.dp)
+                    .height(70.dp)
                     .background(MaterialTheme.colorScheme.primary)
                     .padding(top = 25.dp)
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.meelt_logo),
+                    painter = painterResource(id = R.drawable.meelt_logo_small),
                     contentDescription = stringResource(R.string.content_desc_app_logo),
                     modifier = Modifier
                         .fillMaxSize()
@@ -70,46 +72,43 @@ fun StartBlockedUserScreen(
                 .padding(innerPadding)
                 .padding(horizontal = 22.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+            verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(18.dp))
 
             Text(
                 text = stringResource(R.string.blocked_title),
                 style = MaterialTheme.typography.titleMedium,
                 color = Color.White,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                fontSize = 25.sp
             )
 
             Text(
                 text = user.username,
                 style = MaterialTheme.typography.displaySmall,
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.Light,
                 color = Color.White,
                 textAlign = TextAlign.Center
             )
 
-            val photoRes = if (user.resId != 0) user.resId else R.drawable.default_user
             Box(
                 modifier = Modifier
-                    .fillMaxWidth(0.85f)
+                    .fillMaxWidth(0.70f)
                     .aspectRatio(1f)
                     .clip(CircleShape)
                     .border(
                         width = 5.dp,
-                        color = MaterialTheme.colorScheme.tertiary,
+                        color = MaterialTheme.colorScheme.primary,
                         shape = CircleShape
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                Image(
-                    painter = painterResource(photoRes),
-                    contentDescription = stringResource(R.string.content_desc_photo_of_user, user.username),
-                    modifier = Modifier
-                        .fillMaxWidth(0.90f)
-                        .aspectRatio(1f)
-                        .clip(CircleShape),
-                    contentScale = ContentScale.Crop
+                UserImage(
+                    user = user,
+                    contentDescription = stringResource(R.string.content_desc_user_photo),
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
                 )
             }
 
@@ -120,21 +119,21 @@ fun StartBlockedUserScreen(
                 BlockedActionItem(
                     icon = Icons.Rounded.Block,
                     label = stringResource(R.string.blocked_action_block_desc),
-                    tint = MaterialTheme.colorScheme.tertiary,
+                    tint = MaterialTheme.colorScheme.primary,
                     onClick = {},
                     0.34f
                 )
                 BlockedActionItem(
                     icon = Icons.Rounded.ReportProblem,
                     label = stringResource(R.string.blocked_action_report_desc),
-                    tint = MaterialTheme.colorScheme.tertiary,
+                    tint = MaterialTheme.colorScheme.primary,
                     onClick = {},
                     0.5f
                 )
                 BlockedActionItem(
                     icon = Icons.Rounded.LockOpen,
                     label = stringResource(R.string.blocked_action_unblock),
-                    tint = MaterialTheme.colorScheme.tertiary,
+                    tint = MaterialTheme.colorScheme.primary,
                     onClick = { onUnblock(user) },
                     1f
                 )
@@ -157,6 +156,7 @@ private fun BlockedActionItem(
     ) {
         Column(
             modifier = Modifier
+                .padding(horizontal = 8.dp)
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -170,8 +170,10 @@ private fun BlockedActionItem(
             Text(
                 text = label,
                 style = MaterialTheme.typography.labelSmall,
+                fontWeight = FontWeight.Light,
                 color = Color.White,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                fontSize = 17.sp
             )
         }
     }

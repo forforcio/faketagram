@@ -1,7 +1,7 @@
 package com.izzo.meelt.data.service
 
 import android.content.Context
-import com.izzo.meelt.R
+import androidx.core.content.edit
 import com.izzo.meelt.data.model.AppDataset
 import com.izzo.meelt.data.model.Message
 import com.izzo.meelt.data.model.User
@@ -14,22 +14,23 @@ class DataManagementService {
     var messages: List<Message> = emptyList()
     var usersResourceId: Int = 0
 
-    fun getAvailableUsersJsonNames(): List<String> {
-        val discoveredNames = R.raw::class.java.fields
-            .mapNotNull { field ->
-                field.name.takeIf { it.matches(USERS_JSON_NAME_REGEX) }
+    fun getAvailableUsersJsonNames(appContext: Context): List<String> {
+        return appContext.assets
+            .list(FEEDS_ASSETS_DIR)
+            .orEmpty()
+            .filter { feedName ->
+                appContext.assets
+                    .list("$FEEDS_ASSETS_DIR/$feedName")
+                    .orEmpty()
+                    .contains(USERS_JSON_FILE_NAME)
             }
-            .sortedBy(::extractUsersJsonIndex)
-
-        return if (discoveredNames.isNotEmpty()) {
-            discoveredNames
-        } else {
-            listOf(DEFAULT_USERS_JSON_NAME)
-        }
+            .sorted()
     }
 
     fun getSelectedUsersJsonName(appContext: Context): String {
-        val availableJsonNames = getAvailableUsersJsonNames()
+        val availableJsonNames = getAvailableUsersJsonNames(appContext)
+        if (availableJsonNames.isEmpty()) return ""
+
         val savedJsonName = getPreferences(appContext)
             .getString(PREFERENCE_SELECTED_USERS_JSON_NAME, null)
 
@@ -41,21 +42,37 @@ class DataManagementService {
     context(resources: ResourcesService)
     fun loadSelectedUsersFromPreferences(appContext: Context): String {
         val selectedJsonName = getSelectedUsersJsonName(appContext)
+        if (selectedJsonName.isBlank()) {
+            users = emptyList()
+            messages = emptyList()
+            usersResourceId = 0
+            return ""
+        }
         loadUsersByJsonName(selectedJsonName)
         return selectedJsonName
     }
 
     context(resources: ResourcesService)
     fun selectUsersJson(appContext: Context, jsonName: String): String {
-        val availableJsonNames = getAvailableUsersJsonNames()
+        val availableJsonNames = getAvailableUsersJsonNames(appContext)
+        if (availableJsonNames.isEmpty()) {
+            users = emptyList()
+            messages = emptyList()
+            usersResourceId = 0
+            getPreferences(appContext)
+                .edit()
+                .remove(PREFERENCE_SELECTED_USERS_JSON_NAME)
+                .apply()
+            return ""
+        }
+
         val selectedJsonName = jsonName
             .takeIf { it in availableJsonNames }
             ?: availableJsonNames.first()
 
-        getPreferences(appContext)
-            .edit()
-            .putString(PREFERENCE_SELECTED_USERS_JSON_NAME, selectedJsonName)
-            .apply()
+        getPreferences(appContext).edit {
+            putString(PREFERENCE_SELECTED_USERS_JSON_NAME, selectedJsonName)
+        }
 
         loadUsersByJsonName(selectedJsonName)
         return selectedJsonName
@@ -65,19 +82,7 @@ class DataManagementService {
     fun getUsersFromJson(resId: Int) {
         usersResourceId = resId
         val jsonString = resources.getJsonTextById(resId)
-        val json = Json {
-            ignoreUnknownKeys = true
-        }
-
-        val dataset = decodeDataset(json, jsonString)
-
-        users = dataset.users.map { user ->
-            user.copy(
-                resId = resources.getResourceIdByImageNameOrDefault(user.resName),
-                galleryResIds = resources.getResourceIdsByImageNames(user.galleryResName)
-            )
-        }
-        messages = dataset.messages.sortedBy { it.timestamp }
+        applyDatasetFromJson(jsonString)
     }
 
     fun getAllUsers(): List<User> {
@@ -90,13 +95,52 @@ class DataManagementService {
 
     context(resources: ResourcesService)
     private fun loadUsersByJsonName(jsonName: String) {
-        val resId = resources.context.resources.getIdentifier(
-            jsonName,
-            "raw",
-            resources.context.packageName
-        ).takeIf { it != 0 } ?: R.raw.users_1
+        val assetPath = "$FEEDS_ASSETS_DIR/$jsonName/$USERS_JSON_FILE_NAME"
+        val jsonFromAssets = runCatching {
+            resources.context.assets.open(assetPath)
+                .bufferedReader(Charsets.UTF_8)
+                .use { it.readText() }
+        }.getOrNull()
 
-        getUsersFromJson(resId)
+        if (jsonFromAssets != null) {
+            usersResourceId = 0
+            applyDatasetFromJson(jsonFromAssets)
+            return
+        }
+
+        users = emptyList()
+        messages = emptyList()
+        usersResourceId = 0
+    }
+
+    context(resources: ResourcesService)
+    private fun applyDatasetFromJson(jsonString: String) {
+        val json = Json {
+            ignoreUnknownKeys = true
+        }
+
+        val dataset = decodeDataset(json, jsonString)
+
+        users = dataset.users.map { user ->
+            val profileResId = resources.getResourceIdByImageName(user.resName)
+            val profileAssetPath = user.resName.takeIf {
+                profileResId == 0 && resources.assetExists(it)
+            }
+
+            val galleryResIds = resources.getResourceIdsByImageNames(user.galleryResName)
+            val galleryAssetPaths = user.galleryResName.filter { imagePath ->
+                resources.getResourceIdByImageName(imagePath) == 0 && resources.assetExists(imagePath)
+            }
+
+            user.copy(
+                resId = profileResId.takeIf { it != 0 }
+                    ?: resources.getResourceIdByImageName("default_user"),
+                galleryResIds = galleryResIds,
+                resAssetPath = profileAssetPath,
+                galleryResAssetPaths = galleryAssetPaths
+            )
+        }
+        messages = dataset.messages.sortedBy { it.timestamp }
     }
 
     private fun getPreferences(appContext: Context) =
@@ -104,12 +148,6 @@ class DataManagementService {
             PREFERENCES_NAME,
             Context.MODE_PRIVATE
         )
-
-    private fun extractUsersJsonIndex(jsonName: String): Int {
-        return jsonName.substringAfter(USERS_JSON_NAME_PREFIX)
-            .toIntOrNull()
-            ?: Int.MAX_VALUE
-    }
 
     private fun decodeDataset(json: Json, jsonString: String): AppDataset {
         return runCatching {
@@ -125,8 +163,7 @@ class DataManagementService {
     private companion object {
         private const val PREFERENCES_NAME = "data_management_preferences"
         private const val PREFERENCE_SELECTED_USERS_JSON_NAME = "selected_users_json_name"
-        private const val DEFAULT_USERS_JSON_NAME = "users_1"
-        private const val USERS_JSON_NAME_PREFIX = "users_"
-        private val USERS_JSON_NAME_REGEX = Regex("""users_\d+""")
+        private const val FEEDS_ASSETS_DIR = "feeds"
+        private const val USERS_JSON_FILE_NAME = "users.json"
     }
 }
