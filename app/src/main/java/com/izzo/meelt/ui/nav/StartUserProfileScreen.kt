@@ -54,7 +54,7 @@ fun StartUserProfileScreen(
     onBlockClick: (User) -> Unit,
     showBottomActions: Boolean = true,
 ) {
-    val maxPhotoHeight = LocalConfiguration.current.screenHeightDp.dp * 0.72f
+    val maxPhotoHeight = LocalConfiguration.current.screenHeightDp.dp * 0.75f
 
     val photos = buildList<ProfilePhotoSource> {
         user.resAssetPath?.let { add(ProfilePhotoSource.Asset(it)) }
@@ -97,10 +97,8 @@ fun StartUserProfileScreen(
         ) {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                contentPadding = PaddingValues(
-                    bottom = if (showBottomActions) 130.dp else 24.dp
-                )
+                verticalArrangement = Arrangement.spacedBy(0.dp),
+                contentPadding = PaddingValues(0.dp)
             ) {
                 itemsIndexed(photos) { index, photo ->
                     ProfilePhotoCard(
