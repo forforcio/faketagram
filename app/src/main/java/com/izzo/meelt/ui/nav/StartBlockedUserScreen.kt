@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.izzo.meelt.R
 import com.izzo.meelt.data.model.User
+import com.izzo.meelt.ui.components.UserImage
 
 @Composable
 fun StartBlockedUserScreen(
@@ -91,7 +92,6 @@ fun StartBlockedUserScreen(
                 textAlign = TextAlign.Center
             )
 
-            val photoRes = if (user.resId != 0) user.resId else R.drawable.default_user
             Box(
                 modifier = Modifier
                     .fillMaxWidth(0.70f)
@@ -104,14 +104,11 @@ fun StartBlockedUserScreen(
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                Image(
-                    painter = painterResource(photoRes),
-                    contentDescription = stringResource(R.string.content_desc_photo_of_user, user.username),
-                    modifier = Modifier
-                        .fillMaxWidth(0.90f)
-                        .aspectRatio(1f)
-                        .clip(CircleShape),
-                    contentScale = ContentScale.Crop
+                UserImage(
+                    user = user,
+                    contentDescription = stringResource(R.string.content_desc_user_photo),
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
                 )
             }
 
