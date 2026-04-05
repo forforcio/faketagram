@@ -113,7 +113,7 @@ fun SocialPostCard(
 ) {
     Box(
         modifier = Modifier
-            .padding(vertical=10.dp)
+            .padding(0.dp)
             .fillMaxWidth()
     ) {
         UserImage(
