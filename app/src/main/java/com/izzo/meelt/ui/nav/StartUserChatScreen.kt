@@ -118,8 +118,12 @@ fun StartUserChatScreen(
                         .padding(10.dp),
                 ) {
                     Row(
-                        modifier = Modifier.padding(top = 20.dp).fillMaxSize().padding(horizontal = 5.dp),
-                        verticalAlignment = Alignment.CenterVertically) {
+                        modifier = Modifier
+                            .padding(top = 20.dp)
+                            .fillMaxSize()
+                            .padding(horizontal = 5.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Icon(
                             imageVector = Icons.Default.ArrowBackIosNew,
                             contentDescription = stringResource(R.string.chat_back_icon),
@@ -134,22 +138,13 @@ fun StartUserChatScreen(
                                 .requiredSize(50.dp),
                             contentScale = ContentScale.Crop
                         )
-                        Column() {
-                            Text(
-                                text = chat.interlocutor.username,
-                                modifier = Modifier,
-                                style = MaterialTheme.typography.headlineSmall,
-                                color = Color.White,
-                                textAlign = TextAlign.Start
-                            )
-                            Text(
-                                text = stringResource(R.string.chat_distance_from_you, chat.interlocutor.distance),
-                                modifier = Modifier,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = Color.White,
-                                textAlign = TextAlign.Start
-                            )
-                        }
+                        Text(
+                            text = chat.interlocutor.username,
+                            modifier = Modifier,
+                            style = MaterialTheme.typography.headlineSmall,
+                            color = Color.White,
+                            textAlign = TextAlign.Start
+                        )
                     }
                 }
 //                Box(
@@ -174,7 +169,7 @@ fun StartUserChatScreen(
             }
         },
         bottomBar = {
-            Box (
+            Box(
                 modifier = Modifier
                     .navigationBarsPadding()
                     .imePadding()
@@ -365,10 +360,12 @@ private fun MessageBubble(
     deleteMessage: (Message) -> Unit
 ) {
     BoxWithConstraints(
-        modifier = modifier.padding(vertical = 4.dp).combinedClickable(
-            onClick = {},
-            onLongClick = { deleteMessage(message) },
-        )
+        modifier = modifier
+            .padding(vertical = 4.dp)
+            .combinedClickable(
+                onClick = {},
+                onLongClick = { deleteMessage(message) },
+            )
     ) {
         val isUploadingImage = message.imageUrl == UsersViewModel.LOADING_IMAGE_URL
         val displayImageModel = when {
