@@ -53,6 +53,7 @@ fun StartUserProfileScreen(
     onChatClick: (User) -> Unit,
     onBlockClick: (User) -> Unit,
     showBottomActions: Boolean = true,
+    isCurrentUserProfile: Boolean = false,
 ) {
     val maxPhotoHeight = LocalConfiguration.current.screenHeightDp.dp * 0.75f
 
@@ -76,7 +77,7 @@ fun StartUserProfileScreen(
                     .fillMaxWidth()
                     .height(70.dp)
                     .background(
-                        MaterialTheme.colorScheme.primary
+                        MaterialTheme.colorScheme.tertiary
                     )
                     .padding(top = 25.dp)
             ) {
@@ -106,7 +107,7 @@ fun StartUserProfileScreen(
                         maxPhotoHeight = maxPhotoHeight,
                         overlay = {
                             when {
-                                index == 0 -> MainProfileOverlay(user = user)
+                                index == 0 -> MainProfileOverlay(user = user, isCurrentUserProfile = isCurrentUserProfile)
                                 index == 1 -> AboutMeOverlay(bio = user.bio)
                             }
                         }
@@ -169,7 +170,7 @@ private fun ProfilePhotoCard(
 }
 
 @Composable
-private fun BoxScope.MainProfileOverlay(user: User) {
+private fun BoxScope.MainProfileOverlay(user: User, isCurrentUserProfile: Boolean = false) {
     Column(
         modifier = Modifier
             .align(Alignment.BottomStart)
@@ -182,11 +183,13 @@ private fun BoxScope.MainProfileOverlay(user: User) {
             color = Color.White,
             fontWeight = FontWeight.Bold
         )
-        Text(
-            text = stringResource(R.string.profile_distance, formatDistanceKm(user.distance)),
-            style = MaterialTheme.typography.bodyLarge,
-            color = Color.White
-        )
+        if (!isCurrentUserProfile) {
+            Text(
+                text = stringResource(R.string.profile_distance, formatDistanceKm(user.distance)),
+                style = MaterialTheme.typography.bodyLarge,
+                color = Color.White
+            )
+        }
     }
 }
 

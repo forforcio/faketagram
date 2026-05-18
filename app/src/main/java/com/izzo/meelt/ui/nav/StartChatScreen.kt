@@ -70,7 +70,7 @@ fun StartChatScreen(
                         .fillMaxWidth()
                         .height(70.dp)
                         .background(
-                            MaterialTheme.colorScheme.primary
+                            MaterialTheme.colorScheme.tertiary
                         )
                         .padding(top = 25.dp)
                 ) {

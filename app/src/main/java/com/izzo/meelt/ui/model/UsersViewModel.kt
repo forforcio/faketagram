@@ -5,7 +5,7 @@ import android.graphics.BitmapFactory
 import android.content.Context
 import android.net.Uri
 import android.util.Log
-import com.izzo.meelt.BuildConfig
+import android.app.ActivityManager
 import com.izzo.meelt.R
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -162,6 +162,7 @@ class UsersViewModel : ViewModel() {
                 keyedMessages.forEach { (key, message) ->
                     if (!seenMessageKeys.add(key)) return@forEach
                     if (!shouldNotifyIncoming(message, currentUserUid)) return@forEach
+                    if (!isAppInForeground()) return@forEach
 
                     val sender = _uiState.value.users
                         .find { it.firebaseUid == message.senderUid }
@@ -250,6 +251,18 @@ class UsersViewModel : ViewModel() {
     private fun shouldNotifyIncoming(message: Message, currentUserUid: String): Boolean {
         if (currentUserUid.isBlank()) return false
         return message.receiverUid == currentUserUid && message.senderUid != currentUserUid
+    }
+
+    private fun isAppInForeground(): Boolean {
+        val context = appContext ?: return false
+        val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager
+            ?: return false
+        val runningProcesses = activityManager.runningAppProcesses ?: return false
+
+        return runningProcesses.any { process ->
+            process.processName == context.packageName &&
+                process.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
+        }
     }
 
     private fun buildFallbackMessageKey(message: Message): String {

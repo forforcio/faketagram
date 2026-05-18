@@ -17,6 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.izzo.meelt.notifications.ChatNotificationHelper
+import com.izzo.meelt.notifications.FcmTokenRegistrar
 import com.izzo.meelt.ui.theme.MeeltTheme
 import com.google.firebase.Firebase
 import com.google.firebase.FirebaseApp
@@ -59,6 +60,8 @@ class MainActivity : ComponentActivity() {
             finish()
             return
         }
+
+        FcmTokenRegistrar.syncCurrentTokenForSignedInUser()
 
         enableEdgeToEdge()
         setContent {

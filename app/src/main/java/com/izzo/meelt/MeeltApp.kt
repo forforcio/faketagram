@@ -161,7 +161,8 @@ fun MeeltApp(
                                 viewModel.blockUser(it.userId)
                             }
                         },
-                        showBottomActions = !isCurrentUserProfile
+                        showBottomActions = !isCurrentUserProfile,
+                        isCurrentUserProfile = isCurrentUserProfile
                     )
                 }
             }
@@ -225,7 +226,8 @@ fun MeeltApp(
                         modifier = Modifier.fillMaxSize(),
                         onChatClick = {},
                         onBlockClick = {},
-                        showBottomActions = false
+                        showBottomActions = false,
+                        isCurrentUserProfile = true
                     )
                 }
             }
