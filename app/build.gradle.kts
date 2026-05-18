@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     kotlin("plugin.serialization") version "2.3.20"
     id("com.google.gms.google-services") version "4.4.4"
@@ -13,11 +14,7 @@ kotlin {
 
 android {
     namespace = "com.izzo.meelt"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.izzo.meelt"
@@ -68,6 +65,7 @@ dependencies {
     implementation(libs.firebase.database)
     implementation(libs.firebase.storage)
     implementation(libs.firebase.auth)
+    implementation(libs.firebase.messaging)
 
     // Firebase UI
     implementation(libs.firebase.ui.auth)

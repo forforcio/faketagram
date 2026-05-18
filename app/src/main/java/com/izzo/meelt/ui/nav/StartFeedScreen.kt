@@ -52,7 +52,7 @@ fun StartFeedScreen(
                     .fillMaxWidth()
                     .height(110.dp)
                     .background(
-                        MaterialTheme.colorScheme.primary
+                        MaterialTheme.colorScheme.tertiary
                     )
                     .padding(top = 25.dp)
             ) {
@@ -91,7 +91,7 @@ fun StartFeedScreen(
                     .clip(RoundedCornerShape(10.dp))
                     .fillMaxWidth()
                     .height(40.dp)
-                    .background(MaterialTheme.colorScheme.secondary)
+                    .background(MaterialTheme.colorScheme.tertiary)
                     .padding(horizontal = 10.dp),
             ) {
                 Text(
