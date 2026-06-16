@@ -22,6 +22,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Faketagram"
+rootProject.name = "Meelt"
 include(":app")
  

@@ -1,18 +1,23 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    kotlin("plugin.serialization") version "2.3.20"
+    id("com.google.gms.google-services") version "4.4.4"
+}
+
+kotlin {
+    compilerOptions{
+        freeCompilerArgs = listOf("-XXLanguage:+ContextParameters")
+    }
 }
 
 android {
-    namespace = "com.example.faketagram"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
+    namespace = "com.izzo.meelt"
+    compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.faketagram"
+        applicationId = "com.izzo.meelt"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
@@ -36,6 +41,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -49,7 +55,29 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.androidx.navigation.compose)
+    // Google
+    implementation(libs.play.services.auth)
+
+    // Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.database)
+    implementation(libs.firebase.storage)
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.messaging)
+
+    // Firebase UI
+    implementation(libs.firebase.ui.auth)
+    implementation(libs.firebase.ui.database)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.coil.compose)
+
+    implementation(platform(libs.androidx.compose.bom.vtuversionbom))
+    implementation(libs.androidx.compose.material.icons.extended)
+
     testImplementation(libs.junit)
+    testImplementation(libs.mockito.core)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -57,3 +85,4 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 }
+

@@ -1,3 +1,60 @@
 <resources>
-    <string name="app_name">Faketagram</string>
+    <string name="app_name">Meelt</string>
+
+    <string name="content_desc_app_logo">App logo</string>
+    <string name="content_desc_user_photo">User photo</string>
+    <string name="content_desc_profile_photo">Profile photo</string>
+    <string name="content_desc_photo_of_user">%1$sen argazkia</string>
+
+    <string name="common_search">ZUGANDIK GERTU</string>
+    <string name="common_user_name_age">%1$s, %2$d</string>
+
+    <string name="feed_near_you">ZUGANDIK GERTU</string>
+
+    <string name="chat_user_not_found">Erabiltzailea ez da aurkitu</string>
+    <string name="chat_title_messages">Mezuak</string>
+    <string name="chat_last_message_placeholder">Irakurritako azken mezua (inplementatu gabe)</string>
+    <string name="chat_distance_from_you">Zugandik %1$.1f km-ra</string>
+    <string name="chat_input_placeholder">“Idatzi zerbait…</string>
+    <string name="chat_back_icon">back icon</string>
+    <string name="chat_send_icon">Send icon</string>
+    <string name="chat_take_photo_icon">Take photo icon</string>
+    <string name="chat_gallery_search_icon">Gallery search icon</string>
+    <string name="chat_photo_message">Photo message</string>
+
+    <string name="blocked_title">Blokeatu duzu</string>
+    <string name="blocked_action_block_desc">Kontu honek ez dizu mezuak bidaliko eta zure profila ikusiko ez du</string>
+    <string name="blocked_action_report_desc">Kontu hau salatu dezakezu komunitateko arauak urratzen dituela uste baduzu</string>
+    <string name="blocked_action_unblock">Erabiltzailea desblokeatu</string>
+
+    <string name="profile_logout">Logout</string>
+    <string name="profile_users_json_selector">Erabiltzaileak: %1$s</string>
+    <string name="profile_users_json_none">Datu multzorik gabe</string>
+    <string name="profile_distance">Zugandik %1$s km-ra</string>
+    <string name="profile_about_me">Niri buruz</string>
+    <string name="profile_action_open_chat">Open chat</string>
+    <string name="profile_action_favorite">Favorite</string>
+    <string name="profile_action_block">Block</string>
+
+    <string name="nav_home">Home</string>
+    <string name="nav_chat">Chat</string>
+    <string name="nav_tools">Tools</string>
+    <string name="nav_profile">Profile</string>
+
+    <string name="signin_error_signing_in">There was an error signing in</string>
+
+    <string name="notification_channel_name">Chat messages</string>
+    <string name="notification_channel_description">Notifications for new incoming chat messages</string>
+    <string name="notification_sender_fallback">Mezu berria</string>
+    <string name="notification_photo_preview">Argazki bat bidali dizu</string>
+    <string name="notification_new_message_preview">Mezu berri bat duzu</string>
+
+    <string name="chat_error_sender_receiver_unresolved">Unable to resolve sender or receiver</string>
+    <string name="chat_error_send_message">Bidaltzean errorea: %1$s</string>
+
+    <string name="fallback_user_name">Erabiltzailea ez da aurkitu</string>
+    <string name="fallback_user_bio">Erabiltzaile hau ez dago</string>
+    <string name="chat_no_messages_yet">Oraindik ez dago mezuik</string>
+    <string name="chat_message_image">Irudia</string>
 </resources>
+
